@@ -13,6 +13,11 @@ init -60:
         hover_color "#ffffff"
         selected_color "#e2bd7d"
         insensitive_color "#6e7886"
+    style journey_primary_button is button:
+        background Solid("#8b6a38")
+        hover_background Solid("#b08a4c")
+    style journey_primary_button_text is button_text:
+        color "#fff8e9"
     style say_dialogue:
         font "DejaVuSans.ttf"
         size 34

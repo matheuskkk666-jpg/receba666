@@ -36,5 +36,31 @@
         "dialogue": "test.ch01.observatory.0006"
       }
     ]
+  },
+  {
+    "id": "test_rooftop",
+    "defaults": {
+      "background": "observatory",
+      "music": "quiet",
+      "ambience": null,
+      "lighting": "#14244328",
+      "shot": "wide",
+      "animation": "subtle",
+      "music_gain": 0.22
+    },
+    "sequence": [
+      {
+        "dialogue": "test.ch02.rooftop.0001"
+      },
+      {
+        "dialogue": "test.ch02.rooftop.0002"
+      },
+      {
+        "beat": "relief"
+      },
+      {
+        "dialogue": "test.ch02.rooftop.0003"
+      }
+    ]
   }
 ]

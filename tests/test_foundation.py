@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "game/python-packages"))
-from foundation.model import advance_progress, load_project, resolve, validate, merge
+from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, resolve, unlocked_chapters, validate, merge
 
 class FoundationTests(unittest.TestCase):
     def setUp(self):
@@ -66,27 +66,80 @@ class FoundationTests(unittest.TestCase):
         self.assertEqual(state["expression"]["a"], "neutral")
 
     def test_localization_and_presentation_do_not_resolve_different_scenes(self):
-        expected = resolve(self.project, "test_observatory")
+        expected_ids = set(self.project["narrative_order"])
         for lang in ("en", "pt_BR"):
             for mode in ("static", "cinematic"):
-                self.assertEqual(resolve(self.project, "test_observatory"), expected)
-                self.assertEqual({f["id"] for f in expected}, {e["id"] for e in self.project["editions"][lang]})
+                resolved_ids = set()
+                for scene in self.project["scenes"]:
+                    resolved_ids.update(frame["id"] for frame in resolve(self.project, scene["id"]))
+                self.assertEqual(resolved_ids, expected_ids)
+                self.assertEqual(resolved_ids, {e["id"] for e in self.project["editions"][lang]})
+
+    def test_chapter_order_and_unlocks_use_canonical_data(self):
+        first, second = self.project["chapter_order"]
+        self.assertEqual(chapter_for_narrative(self.project, "test.ch02.rooftop.0001"), second)
+        self.assertEqual(unlocked_chapters(self.project, -1), set())
+        self.assertEqual(
+            unlocked_chapters(self.project, self.project["narrative_index"]["test.ch01.observatory.0006"]),
+            {first},
+        )
+        self.assertEqual(
+            unlocked_chapters(self.project, self.project["narrative_index"]["test.ch02.rooftop.0001"]),
+            {first, second},
+        )
+
+    def test_loaded_indexes_reconstruct_each_narrative_position(self):
+        for narrative_id in self.project["narrative_order"]:
+            scene_id = self.project["narrative_to_scene"][narrative_id]
+            frame_index = self.project["frame_index_by_narrative"][narrative_id]
+            self.assertEqual(self.project["frames_by_scene"][scene_id][frame_index]["id"], narrative_id)
+            self.assertIn(self.project["narrative_to_chapter"][narrative_id], self.project["chapter_by_id"])
+
+    def test_cached_scene_frames_match_resolved_scene_definition(self):
+        for scene_id, frames in self.project["frames_by_scene"].items():
+            self.assertEqual(frames, resolve(self.project, scene_id))
+
+    def test_chapter_titles_are_independent_editions(self):
+        chapter_id = self.project["chapter_order"][1]
+        self.assertEqual(self.project["chapter_editions"]["pt_BR"][chapter_id]["title"], "Depois da Janela")
+        self.assertEqual(self.project["chapter_editions"]["en"][chapter_id]["title"], "Beyond the Window")
+
+    def test_missing_localized_chapter_is_rejected(self):
+        chapter_id = self.project["chapter_order"][1]
+        self.project["chapter_editions"]["en"].pop(chapter_id)
+        self.assertIn("missing en chapter: " + chapter_id, self.errors())
+
+    def test_narrative_cannot_belong_to_multiple_chapters(self):
+        self.project["chapters"][1]["narrative_ids"].append("test.ch01.observatory.0001")
+        self.assertIn("narrative belongs to multiple chapters: test.ch01.observatory.0001", self.errors())
+
+    def test_locked_chapter_screen_does_not_embed_future_metadata(self):
+        screen = (ROOT / "game/ui/chapters/chapters.rpy").read_text(encoding="utf-8")
+        self.assertIn('text ui_text("locked_chapter")', screen)
+        self.assertNotIn("metadata['title']", screen.split("else:", 1)[1])
 
     def test_progress_uses_explicit_canonical_order(self):
         index = {"later_in_data": 0, "earlier_in_data": 1}
-        seen_ids, furthest_position = advance_progress(set(), -1, "earlier_in_data", index)
-        seen_ids, furthest_position = advance_progress(seen_ids, furthest_position, "later_in_data", index)
+        seen_ids, furthest_id = advance_progress(set(), None, "earlier_in_data", index)
+        seen_ids, furthest_id = advance_progress(seen_ids, furthest_id, "later_in_data", index)
         self.assertEqual(seen_ids, {"later_in_data", "earlier_in_data"})
-        self.assertEqual(furthest_position, 1)
+        self.assertEqual(furthest_id, "earlier_in_data")
 
     def test_revisiting_an_earlier_position_preserves_maximum_progress(self):
         index = self.project["narrative_index"]
         later_id = self.project["narrative_order"][4]
         earlier_id = self.project["narrative_order"][1]
-        seen_ids, furthest_position = advance_progress(set(), -1, later_id, index)
-        seen_ids, furthest_position = advance_progress(seen_ids, furthest_position, earlier_id, index)
-        self.assertEqual(furthest_position, index[later_id])
+        seen_ids, furthest_id = advance_progress(set(), None, later_id, index)
+        seen_ids, furthest_id = advance_progress(seen_ids, furthest_id, earlier_id, index)
+        self.assertEqual(furthest_id, later_id)
         self.assertEqual(seen_ids, {later_id, earlier_id})
+
+    def test_stable_furthest_id_survives_narrative_reordering(self):
+        original_index = {"first": 0, "furthest": 1, "later": 2}
+        seen_ids, furthest_id = advance_progress(set(), None, "furthest", original_index)
+        reordered_index = {"furthest": 0, "first": 1, "later": 2}
+        self.assertEqual(canonical_furthest_id(furthest_id, seen_ids, reordered_index), "furthest")
+        self.assertEqual(canonical_furthest_id("removed", {"first"}, reordered_index), "first")
 
     def test_manifest_combines_multiple_fragments_deterministically(self):
         with self.fragment_project() as root:
@@ -129,6 +182,16 @@ class FoundationTests(unittest.TestCase):
             write(f"translations/{language}/ui.json", {"label": language})
         write("scenes/beats.json", {})
         write("assets/manifest.json", {"background": {}, "music": {}, "ambience": {}})
+        chapters = [
+            {"id": "fixture.ch01", "arc_id": "fixture.arc", "order": 1, "first_narrative_id": "fixture.0001", "last_narrative_id": "fixture.0001", "narrative_ids": ["fixture.0001"], "scenes": ["fixture_scene_1"]},
+            {"id": "fixture.ch02", "arc_id": "fixture.arc", "order": 2, "first_narrative_id": "fixture.0002", "last_narrative_id": "fixture.0002", "narrative_ids": ["fixture.0002"], "scenes": ["fixture_scene_2"]},
+        ]
+        write("chapters/chapters.json", chapters)
+        for language in ("pt_BR", "en"):
+            write(f"translations/{language}/chapters.json", {
+                "fixture.ch01": {"arc": "Arc", "chapter": "Chapter 1", "title": "One", "location": "Here"},
+                "fixture.ch02": {"arc": "Arc", "chapter": "Chapter 2", "title": "Two", "location": "There"},
+            })
         manifest = {
             "version": 1,
             "fragments": {
@@ -140,6 +203,9 @@ class FoundationTests(unittest.TestCase):
                 },
             },
             "narrative_order": ["fixture.0001", "fixture.0002"],
+            "chapters": "chapters/chapters.json",
+            "chapter_order": ["fixture.ch01", "fixture.ch02"],
+            "chapter_translations": {"pt_BR": "translations/pt_BR/chapters.json", "en": "translations/en/chapters.json"},
             "beats": "scenes/beats.json",
             "assets": "assets/manifest.json",
             "ui": {"pt_BR": "translations/pt_BR/ui.json", "en": "translations/en/ui.json"},

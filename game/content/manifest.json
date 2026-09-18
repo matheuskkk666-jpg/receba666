@@ -22,8 +22,20 @@
     "test.ch01.observatory.0003",
     "test.ch01.observatory.0004",
     "test.ch01.observatory.0005",
-    "test.ch01.observatory.0006"
+    "test.ch01.observatory.0006",
+    "test.ch02.rooftop.0001",
+    "test.ch02.rooftop.0002",
+    "test.ch02.rooftop.0003"
   ],
+  "chapters": "chapters/placeholder/chapters.json",
+  "chapter_order": [
+    "test.arc01.ch01",
+    "test.arc01.ch02"
+  ],
+  "chapter_translations": {
+    "pt_BR": "translations/pt_BR/chapters.json",
+    "en": "translations/en/chapters.json"
+  },
   "beats": "scenes/beats.json",
   "assets": "assets/manifest.json",
   "ui": {

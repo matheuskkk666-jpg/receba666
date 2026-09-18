@@ -1,8 +1,23 @@
 init python:
     def enter_scene(scene_id):
+        if store.current_scene == scene_id and store.frames:
+            return False
         store.current_scene = scene_id
-        store.frames = resolve(project_data, scene_id)
+        store.frames = project_data["frames_by_scene"][scene_id]
         store.frame_index = 0
+        return True
+
+    def prepare_position(narrative_id, show_chapter_opening=False):
+        scene_id = project_data["narrative_to_scene"][narrative_id]
+        previous_scene = store.current_scene
+        scene_changed = enter_scene(scene_id)
+        store.frame_index = project_data["frame_index_by_narrative"][narrative_id]
+        store.current_id = None
+        store.current_chapter = None if show_chapter_opening else chapter_for_narrative(project_data, narrative_id)
+        store.chapter_opening_pending = show_chapter_opening
+        store.scene_change_pending = previous_scene is not None and scene_changed
+        store.director_state = dict(frames[frame_index]["state"])
+        apply_direction(director_state)
 
     def enter_frame(index):
         frame = frames[index]
@@ -10,6 +25,12 @@ init python:
         store.director_state = dict(frame["state"])
         record_position()
         apply_direction(director_state)
+
+    def next_narrative_id():
+        position = project_data["narrative_index"][current_id] + 1
+        if position >= len(project_data["narrative_order"]):
+            return None
+        return project_data["narrative_order"][position]
 
     def apply_direction(state):
         apply_audio(state)

@@ -1,0 +1,14 @@
+{
+  "test.arc01.ch01": {
+    "arc": "ARC 1",
+    "chapter": "Chapter 1",
+    "title": "The Last Light",
+    "location": "Watcher's Observatory"
+  },
+  "test.arc01.ch02": {
+    "arc": "ARC 1",
+    "chapter": "Chapter 2",
+    "title": "Beyond the Window",
+    "location": "Observatory Rooftop"
+  }
+}

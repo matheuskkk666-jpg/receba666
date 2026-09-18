@@ -1,0 +1,14 @@
+{
+  "test.arc01.ch01": {
+    "arc": "ARCO 1",
+    "chapter": "Capítulo 1",
+    "title": "A Última Luz",
+    "location": "Observatório da Vigia"
+  },
+  "test.arc01.ch02": {
+    "arc": "ARCO 1",
+    "chapter": "Capítulo 2",
+    "title": "Depois da Janela",
+    "location": "Terraço do Observatório"
+  }
+}

@@ -25,6 +25,14 @@ arte ou áudio de Re:Zero.
 `game/content/manifest.json` versiona a composição do conteúdo e declara os
 fragments de narrativa, cenas e traduções que devem ser carregados em ordem.
 
+## Jornada e progresso
+
+O manifest também declara a ordem canônica e os metadados de capítulos. A
+retomada persistente guarda capítulo, cena e ID narrativo; ela é distinta do
+maior ponto alcançado e dos IDs vistos. Autosaves usam os slots nativos
+`auto-*`, separados dos slots manuais, ao entrar em capítulo, mudar de cena,
+em intervalos de leitura e ao retornar ao menu principal.
+
 ### Validação local
 
 Com Python 3 disponível:
