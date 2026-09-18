@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "game/python-packages"))
-from foundation.model import advance_progress, chapter_for_narrative, load_project, resolve, unlocked_chapters, validate, merge
+from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, resolve, unlocked_chapters, validate, merge
 
 class FoundationTests(unittest.TestCase):
     def setUp(self):
@@ -120,19 +120,26 @@ class FoundationTests(unittest.TestCase):
 
     def test_progress_uses_explicit_canonical_order(self):
         index = {"later_in_data": 0, "earlier_in_data": 1}
-        seen_ids, furthest_position = advance_progress(set(), -1, "earlier_in_data", index)
-        seen_ids, furthest_position = advance_progress(seen_ids, furthest_position, "later_in_data", index)
+        seen_ids, furthest_id = advance_progress(set(), None, "earlier_in_data", index)
+        seen_ids, furthest_id = advance_progress(seen_ids, furthest_id, "later_in_data", index)
         self.assertEqual(seen_ids, {"later_in_data", "earlier_in_data"})
-        self.assertEqual(furthest_position, 1)
+        self.assertEqual(furthest_id, "earlier_in_data")
 
     def test_revisiting_an_earlier_position_preserves_maximum_progress(self):
         index = self.project["narrative_index"]
         later_id = self.project["narrative_order"][4]
         earlier_id = self.project["narrative_order"][1]
-        seen_ids, furthest_position = advance_progress(set(), -1, later_id, index)
-        seen_ids, furthest_position = advance_progress(seen_ids, furthest_position, earlier_id, index)
-        self.assertEqual(furthest_position, index[later_id])
+        seen_ids, furthest_id = advance_progress(set(), None, later_id, index)
+        seen_ids, furthest_id = advance_progress(seen_ids, furthest_id, earlier_id, index)
+        self.assertEqual(furthest_id, later_id)
         self.assertEqual(seen_ids, {later_id, earlier_id})
+
+    def test_stable_furthest_id_survives_narrative_reordering(self):
+        original_index = {"first": 0, "furthest": 1, "later": 2}
+        seen_ids, furthest_id = advance_progress(set(), None, "furthest", original_index)
+        reordered_index = {"furthest": 0, "first": 1, "later": 2}
+        self.assertEqual(canonical_furthest_id(furthest_id, seen_ids, reordered_index), "furthest")
+        self.assertEqual(canonical_furthest_id("removed", {"first"}, reordered_index), "first")
 
     def test_manifest_combines_multiple_fragments_deterministically(self):
         with self.fragment_project() as root:

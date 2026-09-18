@@ -1,5 +1,5 @@
 init -80 python:
-    from foundation.model import advance_progress, chapter_for_narrative, load_project, resolve, unlocked_chapters
+    from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, resolve, unlocked_chapters
     def read_data(path):
         with renpy.open_file(path) as stream:
             return stream.read().decode("utf-8")
@@ -17,6 +17,10 @@ init -80 python:
     def chapter_button_label(chapter_id):
         metadata = chapter_metadata(chapter_id)
         return metadata["chapter"] + " — " + metadata["title"]
+    def slot_metadata(chapter_id, legacy_metadata=None):
+        if chapter_id in project_data["chapter_by_id"]:
+            return chapter_metadata(chapter_id)
+        return legacy_metadata or {"arc": "", "chapter": "", "title": "", "location": ""}
     def set_edition(lang):
         persistent.edition = lang
         renpy.save_persistent()

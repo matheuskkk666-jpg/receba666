@@ -10,6 +10,7 @@ testsuite foundation:
         $ persistent.seen_ids = set()
         $ persistent.seen_scenes = set()
         $ persistent.furthest_position = -1
+        $ persistent.furthest_narrative_id = None
         $ persistent.unlocked_chapter_ids = set()
         $ persistent.resume_state = None
         $ persistent.last_autosave_reason = None
@@ -38,6 +39,7 @@ testsuite foundation:
         assert eval is_chapter_unlocked("test.arc01.ch01")
         assert eval not is_chapter_unlocked("test.arc01.ch02")
         assert eval persistent.resume_state["narrative_id"] == current_id
+        assert eval persistent.furthest_narrative_id == current_id
         assert eval persistent.last_autosave_reason == "chapter_entry"
         advance
         assert eval current_id == "test.ch01.observatory.0002"
@@ -52,7 +54,14 @@ testsuite foundation:
         run FileSave(1, confirm=False)
         pause 0.3
         assert eval renpy.slot_json("1-1")["chapter_id"] == "test.arc01.ch01"
-        assert eval renpy.slot_json("1-1")["chapter_title"] == "A Última Luz"
+        assert eval "chapter_title" not in renpy.slot_json("1-1")
+        assert eval slot_metadata(renpy.slot_json("1-1")["chapter_id"])["title"] == "A Última Luz"
+        run Function(set_edition, "en")
+        assert eval slot_metadata(renpy.slot_json("1-1")["chapter_id"])["title"] == "The Last Light"
+        screenshot "m2-save-slot-en.png"
+        run Function(set_edition, "pt_BR")
+        assert eval slot_metadata(renpy.slot_json("1-1")["chapter_id"])["title"] == "A Última Luz"
+        screenshot "m2-save-slot-pt.png"
         click expression ui_text("back")
         advance until screen "chapter_card"
         assert eval current_chapter == "test.arc01.ch02"
@@ -77,6 +86,7 @@ testsuite foundation:
         assert screen "say"
         assert eval current_id == "test.ch01.observatory.0002"
         assert eval current_chapter == "test.arc01.ch01"
+        assert eval persistent.resume_state["narrative_id"] == "test.ch01.observatory.0002"
         assert eval not renpy.get_screen("chapter_card")
         assert eval persistent.furthest_position == project_data["narrative_index"]["test.ch02.rooftop.0001"]
         assert eval is_chapter_unlocked("test.arc01.ch02")
@@ -162,11 +172,13 @@ testsuite foundation:
         assert screen "main_menu"
         $ persistent.seen_ids = set()
         $ persistent.furthest_position = -1
+        $ persistent.furthest_narrative_id = None
         $ persistent.unlocked_chapter_ids = set()
         $ persistent.resume_state = {"chapter_id": "bad", "scene_id": "bad", "narrative_id": "bad"}
         $ persistent.furthest_ids = {"test.ch01.observatory.0006"}
         run Function(migrate_legacy_progress)
         assert eval persistent.furthest_position == project_data["narrative_index"]["test.ch01.observatory.0006"]
+        assert eval persistent.furthest_narrative_id == "test.ch01.observatory.0006"
         assert eval is_chapter_unlocked("test.arc01.ch01")
         assert eval not is_chapter_unlocked("test.arc01.ch02")
         assert eval not has_resume_state()

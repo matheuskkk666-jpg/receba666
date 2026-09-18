@@ -60,11 +60,19 @@ def load_project(root, read=None):
     }
     return project
 
-def advance_progress(seen_ids, furthest_position, narrative_id, narrative_index):
-    """Returns immutable-friendly progress updates using canonical data order."""
+def canonical_furthest_id(furthest_id, seen_ids, narrative_index):
+    """Finds the furthest still-valid stable ID using current canonical order."""
+    candidates = set(seen_ids)
+    if furthest_id:
+        candidates.add(furthest_id)
+    valid = [narrative_id for narrative_id in candidates if narrative_id in narrative_index]
+    return max(valid, key=narrative_index.__getitem__) if valid else None
+
+def advance_progress(seen_ids, furthest_id, narrative_id, narrative_index):
+    """Returns seen content and furthest stable ID using canonical data order."""
     updated_seen_ids = set(seen_ids)
     updated_seen_ids.add(narrative_id)
-    return updated_seen_ids, max(furthest_position, narrative_index[narrative_id])
+    return updated_seen_ids, canonical_furthest_id(furthest_id, updated_seen_ids, narrative_index)
 
 def chapter_for_narrative(project, narrative_id):
     return project["narrative_to_chapter"][narrative_id]
