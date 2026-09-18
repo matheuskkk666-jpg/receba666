@@ -14,7 +14,7 @@ init -100 python:
     config.main_menu_music = None
     config.game_menu_action = ShowMenu("pause_menu")
     config.quit_action = Quit(confirm=False)
-    config.rollback_enabled = True
+    config.rollback_enabled = False
 
 define narrator = Character(None)
 define reader = Character("", dynamic=False)

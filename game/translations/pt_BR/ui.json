@@ -24,5 +24,6 @@
   "empty": "Espaço vazio",
   "shell": "A navegação por capítulos estará disponível em uma próxima etapa.",
   "confirm": "Voltar ao menu? O progresso não salvo será perdido.",
-  "yes": "Confirmar"
+  "yes": "Confirmar",
+  "no": "Cancelar"
 }

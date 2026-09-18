@@ -17,10 +17,13 @@ Leia `AGENTS.md` e a documentação em `docs/` antes de alterar o projeto.
 
 ## Fundação executável
 
-A branch `codex/renpy-foundation` contém uma cena técnica curta e original. Ela
+A fundação contém uma cena técnica curta e original. Ela
 exercita o Scene Director data-driven, localização PT-BR/EN por ID estável,
 modos Estático/Cinematográfico, menus, histórico e save/load. Não contém texto,
 arte ou áudio de Re:Zero.
+
+`game/content/manifest.json` versiona a composição do conteúdo e declara os
+fragments de narrativa, cenas e traduções que devem ser carregados em ordem.
 
 ### Validação local
 

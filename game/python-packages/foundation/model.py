@@ -10,14 +10,34 @@ def load_project(root, read=None):
         if read:
             return json.loads(read(path))
         return json.loads((root / path).read_text(encoding="utf-8"))
+
+    manifest = get("content/manifest.json")
+    if manifest.get("version") != 1:
+        raise ValueError("unsupported content manifest version")
+
+    fragments = manifest["fragments"]
+
+    def combine(paths):
+        return [entry for path in paths for entry in get(path)]
+
+    narrative_order = manifest["narrative_order"]
     return {
-        "narrative": get("narrative/placeholder/entries.json"),
-        "scenes": get("scenes/placeholder/scenes.json"),
-        "beats": get("scenes/beats.json"),
-        "assets": get("assets/manifest.json"),
-        "editions": {lang: get("translations/" + lang + "/story.json") for lang in LANGUAGES},
-        "ui": {lang: get("translations/" + lang + "/ui.json") for lang in LANGUAGES},
+        "manifest_version": manifest["version"],
+        "narrative": combine(fragments["narrative"]),
+        "scenes": combine(fragments["scenes"]),
+        "beats": get(manifest["beats"]),
+        "assets": get(manifest["assets"]),
+        "editions": {lang: combine(fragments["translations"][lang]) for lang in LANGUAGES},
+        "ui": {lang: get(manifest["ui"][lang]) for lang in LANGUAGES},
+        "narrative_order": narrative_order,
+        "narrative_index": {narrative_id: index for index, narrative_id in enumerate(narrative_order)},
     }
+
+def advance_progress(seen_ids, furthest_position, narrative_id, narrative_index):
+    """Returns immutable-friendly progress updates using canonical data order."""
+    updated_seen_ids = set(seen_ids)
+    updated_seen_ids.add(narrative_id)
+    return updated_seen_ids, max(furthest_position, narrative_index[narrative_id])
 
 def merge(state, delta):
     result = copy.deepcopy(state)
@@ -53,6 +73,12 @@ def validate(project, root):
         return seen
     ids = check_unique(project["narrative"], "narrative ID")
     scenes = check_unique(project["scenes"], "scene ID")
+    order = project["narrative_order"]
+    order_ids = check_unique([{"id": narrative_id} for narrative_id in order], "narrative order ID")
+    for key in sorted(ids - order_ids):
+        errors.append("missing canonical order: " + key)
+    for key in sorted(order_ids - ids):
+        errors.append("unknown canonical order ID: " + key)
     for lang in LANGUAGES:
         edition = project["editions"][lang]
         localized = check_unique(edition, lang + " ID")

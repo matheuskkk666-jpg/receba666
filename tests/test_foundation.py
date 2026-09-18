@@ -1,10 +1,12 @@
 import copy
+import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "game/python-packages"))
-from foundation.model import load_project, resolve, validate, merge
+from foundation.model import advance_progress, load_project, resolve, validate, merge
 
 class FoundationTests(unittest.TestCase):
     def setUp(self):
@@ -15,6 +17,10 @@ class FoundationTests(unittest.TestCase):
 
     def test_checked_in_data(self):
         self.assertEqual(self.errors(), [])
+
+    def test_global_confirmation_renders_its_supplied_message(self):
+        screen = (ROOT / "game/ui/main_menu/menu.rpy").read_text(encoding="utf-8")
+        self.assertIn('text message id "confirm_message"', screen)
 
     def test_duplicate_id_rejected(self):
         self.project["narrative"].append(copy.deepcopy(self.project["narrative"][0]))
@@ -65,6 +71,81 @@ class FoundationTests(unittest.TestCase):
             for mode in ("static", "cinematic"):
                 self.assertEqual(resolve(self.project, "test_observatory"), expected)
                 self.assertEqual({f["id"] for f in expected}, {e["id"] for e in self.project["editions"][lang]})
+
+    def test_progress_uses_explicit_canonical_order(self):
+        index = {"later_in_data": 0, "earlier_in_data": 1}
+        seen_ids, furthest_position = advance_progress(set(), -1, "earlier_in_data", index)
+        seen_ids, furthest_position = advance_progress(seen_ids, furthest_position, "later_in_data", index)
+        self.assertEqual(seen_ids, {"later_in_data", "earlier_in_data"})
+        self.assertEqual(furthest_position, 1)
+
+    def test_revisiting_an_earlier_position_preserves_maximum_progress(self):
+        index = self.project["narrative_index"]
+        later_id = self.project["narrative_order"][4]
+        earlier_id = self.project["narrative_order"][1]
+        seen_ids, furthest_position = advance_progress(set(), -1, later_id, index)
+        seen_ids, furthest_position = advance_progress(seen_ids, furthest_position, earlier_id, index)
+        self.assertEqual(furthest_position, index[later_id])
+        self.assertEqual(seen_ids, {later_id, earlier_id})
+
+    def test_manifest_combines_multiple_fragments_deterministically(self):
+        with self.fragment_project() as root:
+            project = load_project(root)
+        self.assertEqual([entry["id"] for entry in project["narrative"]], ["fixture.0001", "fixture.0002"])
+        self.assertEqual([entry["id"] for entry in project["scenes"]], ["fixture_scene_1", "fixture_scene_2"])
+        self.assertEqual(project["editions"]["pt_BR"][1]["text"], "PT fragment two")
+        self.assertEqual(project["narrative_index"], {"fixture.0001": 0, "fixture.0002": 1})
+
+    def test_manifest_detects_duplicate_ids_between_fragments(self):
+        with self.fragment_project(duplicate_narrative=True) as root:
+            project = load_project(root)
+            errors = validate(project, root)
+        self.assertTrue(any("duplicate/empty narrative ID: fixture.0001" == error for error in errors))
+
+    def test_manifest_detects_translation_missing_from_a_fragment(self):
+        with self.fragment_project(missing_en_second=True) as root:
+            project = load_project(root)
+            errors = validate(project, root)
+        self.assertIn("missing en: fixture.0002", errors)
+
+    def fragment_project(self, duplicate_narrative=False, missing_en_second=False):
+        temporary = tempfile.TemporaryDirectory()
+        root = Path(temporary.name)
+
+        def write(relative_path, content):
+            target = root / relative_path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(json.dumps(content), encoding="utf-8")
+
+        narrative_ids = ["fixture.0001", "fixture.0001" if duplicate_narrative else "fixture.0002"]
+        write("narrative/one.json", [{"id": narrative_ids[0], "scene": "fixture_scene_1"}])
+        write("narrative/two.json", [{"id": narrative_ids[1], "scene": "fixture_scene_2"}])
+        defaults = {"background": None, "music": None, "ambience": None, "lighting": "#00000000", "animation": "none"}
+        write("scenes/one.json", [{"id": "fixture_scene_1", "defaults": defaults, "sequence": [{"dialogue": narrative_ids[0]}]}])
+        write("scenes/two.json", [{"id": "fixture_scene_2", "defaults": defaults, "sequence": [{"dialogue": narrative_ids[1]}]}])
+        for language, first_text, second_text in (("pt_BR", "PT fragment one", "PT fragment two"), ("en", "EN fragment one", "EN fragment two")):
+            write(f"translations/{language}/one.json", [{"id": "fixture.0001", "speaker": "", "text": first_text}])
+            write(f"translations/{language}/two.json", [{"id": "fixture.0002", "speaker": "", "text": second_text}])
+            write(f"translations/{language}/ui.json", {"label": language})
+        write("scenes/beats.json", {})
+        write("assets/manifest.json", {"background": {}, "music": {}, "ambience": {}})
+        manifest = {
+            "version": 1,
+            "fragments": {
+                "narrative": ["narrative/one.json", "narrative/two.json"],
+                "scenes": ["scenes/one.json", "scenes/two.json"],
+                "translations": {
+                    "pt_BR": ["translations/pt_BR/one.json", "translations/pt_BR/two.json"],
+                    "en": ["translations/en/one.json"] if missing_en_second else ["translations/en/one.json", "translations/en/two.json"],
+                },
+            },
+            "narrative_order": ["fixture.0001", "fixture.0002"],
+            "beats": "scenes/beats.json",
+            "assets": "assets/manifest.json",
+            "ui": {"pt_BR": "translations/pt_BR/ui.json", "en": "translations/en/ui.json"},
+        }
+        write("content/manifest.json", manifest)
+        return temporary
 
 if __name__ == "__main__":
     unittest.main()

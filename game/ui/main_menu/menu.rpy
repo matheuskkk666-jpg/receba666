@@ -28,7 +28,7 @@ screen confirm(message, yes_action, no_action):
     vbox:
         align (0.5, 0.5)
         spacing 24
-        text ui_text("confirm") xmaximum 1000
+        text message id "confirm_message" xmaximum 1000
         textbutton ui_text("yes") action yes_action
-        textbutton ui_text("back") action no_action
+        textbutton ui_text("no") action no_action
     key "game_menu" action no_action

@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "fragments": {
+    "narrative": [
+      "narrative/placeholder/entries.json"
+    ],
+    "scenes": [
+      "scenes/placeholder/scenes.json"
+    ],
+    "translations": {
+      "pt_BR": [
+        "translations/pt_BR/story.json"
+      ],
+      "en": [
+        "translations/en/story.json"
+      ]
+    }
+  },
+  "narrative_order": [
+    "test.ch01.observatory.0001",
+    "test.ch01.observatory.0002",
+    "test.ch01.observatory.0003",
+    "test.ch01.observatory.0004",
+    "test.ch01.observatory.0005",
+    "test.ch01.observatory.0006"
+  ],
+  "beats": "scenes/beats.json",
+  "assets": "assets/manifest.json",
+  "ui": {
+    "pt_BR": "translations/pt_BR/ui.json",
+    "en": "translations/en/ui.json"
+  }
+}

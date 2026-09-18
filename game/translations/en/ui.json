@@ -24,5 +24,6 @@
   "empty": "Empty slot",
   "shell": "Chapter navigation will be available in a later milestone.",
   "confirm": "Return to the menu? Unsaved progress will be lost.",
-  "yes": "Confirm"
+  "yes": "Confirm",
+  "no": "Cancel"
 }

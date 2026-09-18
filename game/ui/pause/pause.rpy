@@ -17,5 +17,5 @@ screen pause_menu():
         textbutton ui_text("load") action ShowMenu("load")
         textbutton ui_text("chapters") action ShowMenu("chapters")
         textbutton ui_text("settings") action ShowMenu("settings")
-        textbutton ui_text("main") action MainMenu(confirm=True)
+        textbutton ui_text("main") action Confirm(ui_text("confirm"), MainMenu(confirm=False), Return())
     key "game_menu" action Return()
