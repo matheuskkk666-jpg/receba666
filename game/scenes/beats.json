@@ -1,0 +1,10 @@
+{
+  "tension_rising": {
+    "lighting": "#09112738",
+    "music_gain": 0.12
+  },
+  "relief": {
+    "lighting": "#00000000",
+    "music_gain": 0.25
+  }
+}

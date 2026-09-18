@@ -1,0 +1,40 @@
+[
+  {
+    "id": "test_observatory",
+    "defaults": {
+      "background": "observatory",
+      "music": "quiet",
+      "ambience": null,
+      "lighting": "#00000000",
+      "shot": "wide",
+      "animation": "subtle",
+      "music_gain": 0.25
+    },
+    "sequence": [
+      {
+        "dialogue": "test.ch01.observatory.0001"
+      },
+      {
+        "dialogue": "test.ch01.observatory.0002"
+      },
+      {
+        "dialogue": "test.ch01.observatory.0003"
+      },
+      {
+        "beat": "tension_rising"
+      },
+      {
+        "dialogue": "test.ch01.observatory.0004"
+      },
+      {
+        "beat": "relief"
+      },
+      {
+        "dialogue": "test.ch01.observatory.0005"
+      },
+      {
+        "dialogue": "test.ch01.observatory.0006"
+      }
+    ]
+  }
+]

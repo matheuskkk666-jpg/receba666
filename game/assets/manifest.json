@@ -1,0 +1,9 @@
+{
+  "background": {
+    "observatory": "assets/backgrounds/observatory.png"
+  },
+  "music": {
+    "quiet": "audio/music/quiet.wav"
+  },
+  "ambience": {}
+}

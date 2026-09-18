@@ -1,0 +1,11 @@
+*.rpyc
+*.rpymc
+__pycache__/
+game/cache/
+game/saves/
+log.txt
+traceback.txt
+errors.txt
+*.save
+tests/artifacts/
+.local/

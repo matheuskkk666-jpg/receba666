@@ -1,0 +1,44 @@
+[
+  {
+    "id": "test.ch01.observatory.0001",
+    "scene": "test_observatory",
+    "kind": "narration",
+    "provenance": "original_placeholder",
+    "status": "manually_revised"
+  },
+  {
+    "id": "test.ch01.observatory.0002",
+    "scene": "test_observatory",
+    "kind": "dialogue",
+    "provenance": "original_placeholder",
+    "status": "manually_revised"
+  },
+  {
+    "id": "test.ch01.observatory.0003",
+    "scene": "test_observatory",
+    "kind": "thought",
+    "provenance": "original_placeholder",
+    "status": "manually_revised"
+  },
+  {
+    "id": "test.ch01.observatory.0004",
+    "scene": "test_observatory",
+    "kind": "narration",
+    "provenance": "original_placeholder",
+    "status": "manually_revised"
+  },
+  {
+    "id": "test.ch01.observatory.0005",
+    "scene": "test_observatory",
+    "kind": "dialogue",
+    "provenance": "original_placeholder",
+    "status": "manually_revised"
+  },
+  {
+    "id": "test.ch01.observatory.0006",
+    "scene": "test_observatory",
+    "kind": "narration",
+    "provenance": "original_placeholder",
+    "status": "manually_revised"
+  }
+]
