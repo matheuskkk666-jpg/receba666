@@ -25,7 +25,7 @@ def load_project(root, read=None):
     narrative_order = manifest["narrative_order"]
     chapters = get(manifest["chapters"])
     chapter_order = manifest["chapter_order"]
-    return {
+    project = {
         "manifest_version": manifest["version"],
         "narrative": narrative,
         "scenes": scenes,
@@ -42,6 +42,23 @@ def load_project(root, read=None):
         "chapter_by_id": {chapter["id"]: chapter for chapter in chapters},
         "chapter_editions": {lang: get(manifest["chapter_translations"][lang]) for lang in LANGUAGES},
     }
+    project["scene_by_id"] = {scene["id"]: scene for scene in scenes}
+    project["narrative_to_scene"] = {entry["id"]: entry["scene"] for entry in narrative}
+    project["narrative_to_chapter"] = {
+        narrative_id: chapter["id"]
+        for chapter in chapters
+        for narrative_id in chapter["narrative_ids"]
+    }
+    project["frames_by_scene"] = {
+        scene_id: resolve(project, scene_id)
+        for scene_id in project["scene_by_id"]
+    }
+    project["frame_index_by_narrative"] = {
+        frame["id"]: index
+        for frames in project["frames_by_scene"].values()
+        for index, frame in enumerate(frames)
+    }
+    return project
 
 def advance_progress(seen_ids, furthest_position, narrative_id, narrative_index):
     """Returns immutable-friendly progress updates using canonical data order."""
@@ -50,10 +67,7 @@ def advance_progress(seen_ids, furthest_position, narrative_id, narrative_index)
     return updated_seen_ids, max(furthest_position, narrative_index[narrative_id])
 
 def chapter_for_narrative(project, narrative_id):
-    for chapter in project["chapters"]:
-        if narrative_id in chapter["narrative_ids"]:
-            return chapter["id"]
-    raise KeyError("narrative ID has no chapter: " + narrative_id)
+    return project["narrative_to_chapter"][narrative_id]
 
 def unlocked_chapters(project, furthest_position):
     if furthest_position < 0:
@@ -74,7 +88,9 @@ def merge(state, delta):
     return result
 
 def resolve(project, scene_id):
-    scene = next(s for s in project["scenes"] if s["id"] == scene_id)
+    scene = project.get("scene_by_id", {}).get(scene_id)
+    if scene is None:
+        scene = next(s for s in project["scenes"] if s["id"] == scene_id)
     state = copy.deepcopy(scene["defaults"])
     frames = []
     for event in scene["sequence"]:

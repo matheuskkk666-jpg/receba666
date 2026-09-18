@@ -68,8 +68,14 @@ init python:
     def has_resume_state():
         return is_valid_resume_state(getattr(persistent, "resume_state", None))
 
+    def has_journey_progress():
+        return bool(persistent.unlocked_chapter_ids)
+
     def is_chapter_unlocked(chapter_id):
         return chapter_id in persistent.unlocked_chapter_ids
+
+    def complete_journey():
+        persistent.resume_state = None
 
     def record_position():
         persistent.seen_scenes.add(current_scene)

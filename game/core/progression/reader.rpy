@@ -53,7 +53,8 @@ label chapter_start:
 
 label reading_loop:
     show screen scene_art onlayer master
-    while current_id is None or next_narrative_id() is not None:
+    $ journey_finished = False
+    while not journey_finished:
         $ pending_id = frames[frame_index]["id"]
         $ pending_chapter = chapter_for_narrative(project_data, pending_id)
         $ chapter_changed = current_chapter != pending_chapter
@@ -73,9 +74,10 @@ label reading_loop:
             $ next_chapter = chapter_for_narrative(project_data, next_id)
             $ prepare_position(next_id, next_chapter != current_chapter)
         else:
+            $ complete_journey()
             $ request_autosave("journey_complete")
-            $ current_id = None
+            $ journey_finished = True
     hide screen scene_art onlayer master
     $ renpy.music.stop(channel="music", fadeout=1.0)
     $ renpy.music.stop(channel="ambience", fadeout=1.0)
-    return
+    jump main_menu

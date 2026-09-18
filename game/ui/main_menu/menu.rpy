@@ -20,9 +20,10 @@ screen main_menu():
         if has_resume_state():
             textbutton ui_text("continue") id "continue_journey" action Start("continue_journey") style "journey_primary_button"
             textbutton ui_text("start") id "start_journey" action Confirm(ui_text("restart_journey_confirm"), start_journey_action(), Return())
-            textbutton ui_text("chapters") id "journey_chapters" action ShowMenu("chapters")
         else:
             textbutton ui_text("start") id "start_journey" action start_journey_action() style "journey_primary_button"
+        if has_journey_progress():
+            textbutton ui_text("chapters") id "journey_chapters" action ShowMenu("chapters")
         textbutton ui_text("settings") action ShowMenu("settings")
         textbutton ui_text("exit") action Quit(confirm=False)
 

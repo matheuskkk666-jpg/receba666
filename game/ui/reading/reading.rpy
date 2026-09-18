@@ -11,7 +11,7 @@ screen say(who, what):
         vbox:
             spacing 15
             text localized_entry().get("speaker", "") style "say_label" id "who"
-            text localized_entry()["text"] style "say_dialogue" id "what"
+            text what style "say_dialogue" id "what"
     add Solid("#bda576", xsize=1440, ysize=2) xpos 240 ypos 755
     imagebutton:
         id "hide_ui"

@@ -88,6 +88,17 @@ class FoundationTests(unittest.TestCase):
             {first, second},
         )
 
+    def test_loaded_indexes_reconstruct_each_narrative_position(self):
+        for narrative_id in self.project["narrative_order"]:
+            scene_id = self.project["narrative_to_scene"][narrative_id]
+            frame_index = self.project["frame_index_by_narrative"][narrative_id]
+            self.assertEqual(self.project["frames_by_scene"][scene_id][frame_index]["id"], narrative_id)
+            self.assertIn(self.project["narrative_to_chapter"][narrative_id], self.project["chapter_by_id"])
+
+    def test_cached_scene_frames_match_resolved_scene_definition(self):
+        for scene_id, frames in self.project["frames_by_scene"].items():
+            self.assertEqual(frames, resolve(self.project, scene_id))
+
     def test_chapter_titles_are_independent_editions(self):
         chapter_id = self.project["chapter_order"][1]
         self.assertEqual(self.project["chapter_editions"]["pt_BR"][chapter_id]["title"], "Depois da Janela")

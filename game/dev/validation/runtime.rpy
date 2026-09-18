@@ -23,6 +23,7 @@ testsuite foundation:
         assert screen "main_menu"
         assert eval not has_resume_state()
         assert eval renpy.get_widget("main_menu", "continue_journey") is None
+        assert eval renpy.get_widget("main_menu", "journey_chapters") is None
         assert eval not config.rollback_enabled
         screenshot "m2-main-clean.png"
         click id "start_journey"
@@ -86,6 +87,7 @@ testsuite foundation:
         assert screen "main_menu"
         assert eval has_resume_state()
         assert eval renpy.get_widget("main_menu", "continue_journey") is not None
+        assert eval renpy.get_widget("main_menu", "journey_chapters") is not None
         click id "continue_journey"
         pause 0.3
         assert screen "say"
@@ -131,6 +133,29 @@ testsuite foundation:
         assert screen "pause_menu"
         click expression ui_text("main")
         click expression ui_text("yes")
+        assert screen "main_menu"
+
+    testcase completion_clears_resume_and_keeps_chapters:
+        assert screen "main_menu"
+        assert eval has_resume_state()
+        $ persistent.edition = "pt_BR"
+        $ _history_list[:] = []
+        click id "continue_journey" until screen "say"
+        advance until screen "main_menu"
+        assert eval current_id == "test.ch02.rooftop.0003"
+        assert eval not has_resume_state()
+        assert eval renpy.get_widget("main_menu", "continue_journey") is None
+        assert eval renpy.get_widget("main_menu", "journey_chapters") is not None
+        assert eval is_chapter_unlocked("test.arc01.ch01") and is_chapter_unlocked("test.arc01.ch02")
+        assert eval sum(1 for entry in _history_list if getattr(entry, "narrative_id", None) == "test.ch02.rooftop.0003") == 1
+        click id "journey_chapters"
+        assert screen "chapters"
+        click expression chapter_button_label("test.arc01.ch01")
+        assert screen "chapter_card"
+        pause 3.2
+        assert screen "say"
+        assert eval current_id == "test.ch01.observatory.0001"
+        run MainMenu(confirm=False)
         assert screen "main_menu"
 
     testcase legacy_m1_progress_migrates_without_resume:
