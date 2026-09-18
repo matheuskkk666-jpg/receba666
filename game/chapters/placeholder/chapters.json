@@ -1,0 +1,31 @@
+[
+  {
+    "id": "test.arc01.ch01",
+    "arc_id": "test.arc01",
+    "order": 1,
+    "first_narrative_id": "test.ch01.observatory.0001",
+    "last_narrative_id": "test.ch01.observatory.0006",
+    "narrative_ids": [
+      "test.ch01.observatory.0001",
+      "test.ch01.observatory.0002",
+      "test.ch01.observatory.0003",
+      "test.ch01.observatory.0004",
+      "test.ch01.observatory.0005",
+      "test.ch01.observatory.0006"
+    ],
+    "scenes": ["test_observatory"]
+  },
+  {
+    "id": "test.arc01.ch02",
+    "arc_id": "test.arc01",
+    "order": 2,
+    "first_narrative_id": "test.ch02.rooftop.0001",
+    "last_narrative_id": "test.ch02.rooftop.0003",
+    "narrative_ids": [
+      "test.ch02.rooftop.0001",
+      "test.ch02.rooftop.0002",
+      "test.ch02.rooftop.0003"
+    ],
+    "scenes": ["test_rooftop"]
+  }
+]

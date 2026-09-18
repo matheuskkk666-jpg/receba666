@@ -1,14 +1,22 @@
 init -80 python:
-    from foundation.model import advance_progress, load_project, resolve
+    from foundation.model import advance_progress, chapter_for_narrative, load_project, resolve, unlocked_chapters
     def read_data(path):
         with renpy.open_file(path) as stream:
             return stream.read().decode("utf-8")
     project_data = load_project(config.gamedir, read_data)
     edition_index = {lang: {e["id"]: e for e in entries} for lang, entries in project_data["editions"].items()}
+    chapter_edition_index = project_data["chapter_editions"]
     def ui_text(key):
         return project_data["ui"][persistent.edition or "pt_BR"][key]
     def localized_entry():
         return edition_index[persistent.edition or "pt_BR"][current_id]
+    def chapter_metadata(chapter_id):
+        return chapter_edition_index[persistent.edition or "pt_BR"][chapter_id]
+    def chapter_display_title(chapter_id):
+        return chapter_metadata(chapter_id)["title"]
+    def chapter_button_label(chapter_id):
+        metadata = chapter_metadata(chapter_id)
+        return metadata["chapter"] + " — " + metadata["title"]
     def set_edition(lang):
         persistent.edition = lang
         renpy.save_persistent()

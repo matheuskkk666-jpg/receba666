@@ -24,5 +24,8 @@ screen file_slots(kind):
                         spacing 8
                         add FileScreenshot(slot) xysize (384, 180)
                         text FileTime(slot, format="%d/%m/%Y · %H:%M", empty=ui_text("empty")) size 21
+                        text "[(FileJson(slot, 'arc', empty='') or '')] · [(FileJson(slot, 'chapter', empty='') or '')]" size 18
+                        text (FileJson(slot, "chapter_title", empty="") or "") size 19 color "#d2b682"
+                        text (FileJson(slot, "location", empty="") or "") size 17 color "#bdc8d8"
         textbutton ui_text("back") action Return()
     key "game_menu" action Return()

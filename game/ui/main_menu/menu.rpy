@@ -1,6 +1,6 @@
 init python:
-    # Reserved destinations, intentionally not displayed before implementation.
-    future_menu_destinations = ("continue", "chapters", "memories")
+    def start_journey_action():
+        return Start("journey_start")
 
 label main_menu:
     call screen main_menu
@@ -17,7 +17,12 @@ screen main_menu():
         text ui_text("eyebrow") size 20 color "#d2b682" kerning 4
         text ui_text("title") size 76 color "#f3eee3"
         null height 42
-        textbutton ui_text("start") action Start()
+        if has_resume_state():
+            textbutton ui_text("continue") id "continue_journey" action Start("continue_journey") style "journey_primary_button"
+            textbutton ui_text("start") id "start_journey" action Confirm(ui_text("restart_journey_confirm"), start_journey_action(), Return())
+            textbutton ui_text("chapters") id "journey_chapters" action ShowMenu("chapters")
+        else:
+            textbutton ui_text("start") id "start_journey" action start_journey_action() style "journey_primary_button"
         textbutton ui_text("settings") action ShowMenu("settings")
         textbutton ui_text("exit") action Quit(confirm=False)
 

@@ -1,6 +1,7 @@
 {
   "eyebrow": "AN ORIGINAL SCENE",
   "title": "The Last Light",
+  "continue": "Continue",
   "start": "Start Journey",
   "settings": "Settings",
   "exit": "Exit",
@@ -22,8 +23,9 @@
   "fullscreen": "Fullscreen",
   "back": "Back",
   "empty": "Empty slot",
-  "shell": "Chapter navigation will be available in a later milestone.",
   "confirm": "Return to the menu? Unsaved progress will be lost.",
+  "restart_journey_confirm": "Start again from the beginning? Your discoveries will remain unlocked.",
+  "locked_chapter": "???",
   "yes": "Confirm",
   "no": "Cancel"
 }

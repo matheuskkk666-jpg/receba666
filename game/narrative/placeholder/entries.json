@@ -40,5 +40,26 @@
     "kind": "narration",
     "provenance": "original_placeholder",
     "status": "manually_revised"
+  },
+  {
+    "id": "test.ch02.rooftop.0001",
+    "scene": "test_rooftop",
+    "kind": "narration",
+    "provenance": "original_placeholder",
+    "status": "manually_revised"
+  },
+  {
+    "id": "test.ch02.rooftop.0002",
+    "scene": "test_rooftop",
+    "kind": "dialogue",
+    "provenance": "original_placeholder",
+    "status": "manually_revised"
+  },
+  {
+    "id": "test.ch02.rooftop.0003",
+    "scene": "test_rooftop",
+    "kind": "narration",
+    "provenance": "original_placeholder",
+    "status": "manually_revised"
   }
 ]

@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "game/python-packages"))
-from foundation.model import advance_progress, load_project, resolve, validate, merge
+from foundation.model import advance_progress, chapter_for_narrative, load_project, resolve, unlocked_chapters, validate, merge
 
 class FoundationTests(unittest.TestCase):
     def setUp(self):
@@ -66,11 +66,46 @@ class FoundationTests(unittest.TestCase):
         self.assertEqual(state["expression"]["a"], "neutral")
 
     def test_localization_and_presentation_do_not_resolve_different_scenes(self):
-        expected = resolve(self.project, "test_observatory")
+        expected_ids = set(self.project["narrative_order"])
         for lang in ("en", "pt_BR"):
             for mode in ("static", "cinematic"):
-                self.assertEqual(resolve(self.project, "test_observatory"), expected)
-                self.assertEqual({f["id"] for f in expected}, {e["id"] for e in self.project["editions"][lang]})
+                resolved_ids = set()
+                for scene in self.project["scenes"]:
+                    resolved_ids.update(frame["id"] for frame in resolve(self.project, scene["id"]))
+                self.assertEqual(resolved_ids, expected_ids)
+                self.assertEqual(resolved_ids, {e["id"] for e in self.project["editions"][lang]})
+
+    def test_chapter_order_and_unlocks_use_canonical_data(self):
+        first, second = self.project["chapter_order"]
+        self.assertEqual(chapter_for_narrative(self.project, "test.ch02.rooftop.0001"), second)
+        self.assertEqual(unlocked_chapters(self.project, -1), set())
+        self.assertEqual(
+            unlocked_chapters(self.project, self.project["narrative_index"]["test.ch01.observatory.0006"]),
+            {first},
+        )
+        self.assertEqual(
+            unlocked_chapters(self.project, self.project["narrative_index"]["test.ch02.rooftop.0001"]),
+            {first, second},
+        )
+
+    def test_chapter_titles_are_independent_editions(self):
+        chapter_id = self.project["chapter_order"][1]
+        self.assertEqual(self.project["chapter_editions"]["pt_BR"][chapter_id]["title"], "Depois da Janela")
+        self.assertEqual(self.project["chapter_editions"]["en"][chapter_id]["title"], "Beyond the Window")
+
+    def test_missing_localized_chapter_is_rejected(self):
+        chapter_id = self.project["chapter_order"][1]
+        self.project["chapter_editions"]["en"].pop(chapter_id)
+        self.assertIn("missing en chapter: " + chapter_id, self.errors())
+
+    def test_narrative_cannot_belong_to_multiple_chapters(self):
+        self.project["chapters"][1]["narrative_ids"].append("test.ch01.observatory.0001")
+        self.assertIn("narrative belongs to multiple chapters: test.ch01.observatory.0001", self.errors())
+
+    def test_locked_chapter_screen_does_not_embed_future_metadata(self):
+        screen = (ROOT / "game/ui/chapters/chapters.rpy").read_text(encoding="utf-8")
+        self.assertIn('text ui_text("locked_chapter")', screen)
+        self.assertNotIn("metadata['title']", screen.split("else:", 1)[1])
 
     def test_progress_uses_explicit_canonical_order(self):
         index = {"later_in_data": 0, "earlier_in_data": 1}
@@ -129,6 +164,16 @@ class FoundationTests(unittest.TestCase):
             write(f"translations/{language}/ui.json", {"label": language})
         write("scenes/beats.json", {})
         write("assets/manifest.json", {"background": {}, "music": {}, "ambience": {}})
+        chapters = [
+            {"id": "fixture.ch01", "arc_id": "fixture.arc", "order": 1, "first_narrative_id": "fixture.0001", "last_narrative_id": "fixture.0001", "narrative_ids": ["fixture.0001"], "scenes": ["fixture_scene_1"]},
+            {"id": "fixture.ch02", "arc_id": "fixture.arc", "order": 2, "first_narrative_id": "fixture.0002", "last_narrative_id": "fixture.0002", "narrative_ids": ["fixture.0002"], "scenes": ["fixture_scene_2"]},
+        ]
+        write("chapters/chapters.json", chapters)
+        for language in ("pt_BR", "en"):
+            write(f"translations/{language}/chapters.json", {
+                "fixture.ch01": {"arc": "Arc", "chapter": "Chapter 1", "title": "One", "location": "Here"},
+                "fixture.ch02": {"arc": "Arc", "chapter": "Chapter 2", "title": "Two", "location": "There"},
+            })
         manifest = {
             "version": 1,
             "fragments": {
@@ -140,6 +185,9 @@ class FoundationTests(unittest.TestCase):
                 },
             },
             "narrative_order": ["fixture.0001", "fixture.0002"],
+            "chapters": "chapters/chapters.json",
+            "chapter_order": ["fixture.ch01", "fixture.ch02"],
+            "chapter_translations": {"pt_BR": "translations/pt_BR/chapters.json", "en": "translations/en/chapters.json"},
             "beats": "scenes/beats.json",
             "assets": "assets/manifest.json",
             "ui": {"pt_BR": "translations/pt_BR/ui.json", "en": "translations/en/ui.json"},

@@ -22,6 +22,20 @@ screen say(who, what):
         action HideInterface()
         alt ui_text("hide")
 
+screen journey_indicator(chapter_id):
+    zorder 70
+    $ metadata = chapter_metadata(chapter_id)
+    frame:
+        xpos 56
+        ypos 52
+        background Solid("#091326c8")
+        padding (22, 14)
+        vbox:
+            spacing 5
+            text "[metadata['arc']] — [metadata['location']]" size 20 color "#d2b682"
+            text "[metadata['chapter']] — [metadata['title']]" size 26 color "#f3eee3"
+    timer 4.0 action Hide("journey_indicator")
+
 screen choice(items):
     # Required engine hook; narrative choices are intentionally unsupported.
     pass

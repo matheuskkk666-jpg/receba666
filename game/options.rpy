@@ -9,7 +9,8 @@ init -100 python:
     config.default_text_cps = 38
     config.default_fullscreen = False
     config.allow_skipping = False
-    config.has_autosave = False
+    config.has_autosave = True
+    config.autosave_slots = 3
     config.history_length = 100
     config.main_menu_music = None
     config.game_menu_action = ShowMenu("pause_menu")

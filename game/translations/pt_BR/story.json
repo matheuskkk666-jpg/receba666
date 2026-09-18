@@ -28,5 +28,20 @@
     "id": "test.ch01.observatory.0006",
     "speaker": "",
     "text": "Ela afastou a cadeira da janela. Na mesa, duas xícaras guardavam o calor de uma conversa que podia, enfim, começar."
+  },
+  {
+    "id": "test.ch02.rooftop.0001",
+    "speaker": "",
+    "text": "Mais tarde, o telhado devolvia à cidade uma luz azulada. As nuvens tinham se afastado, deixando o horizonte limpo."
+  },
+  {
+    "id": "test.ch02.rooftop.0002",
+    "speaker": "Lia",
+    "text": "Daqui, parece que cada janela guarda uma história que ainda não decidiu terminar."
+  },
+  {
+    "id": "test.ch02.rooftop.0003",
+    "speaker": "",
+    "text": "A primeira estrela surgiu acima da torre. Por um instante, ninguém precisou dizer mais nada."
   }
 ]

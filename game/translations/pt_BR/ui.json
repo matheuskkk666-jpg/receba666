@@ -1,6 +1,7 @@
 {
   "eyebrow": "UMA CENA ORIGINAL",
   "title": "A última luz",
+  "continue": "Continuar",
   "start": "Começar Jornada",
   "settings": "Configurações",
   "exit": "Sair",
@@ -22,8 +23,9 @@
   "fullscreen": "Tela cheia",
   "back": "Voltar",
   "empty": "Espaço vazio",
-  "shell": "A navegação por capítulos estará disponível em uma próxima etapa.",
   "confirm": "Voltar ao menu? O progresso não salvo será perdido.",
+  "restart_journey_confirm": "Começar novamente a partir do início? Suas descobertas continuarão desbloqueadas.",
+  "locked_chapter": "???",
   "yes": "Confirmar",
   "no": "Cancelar"
 }
