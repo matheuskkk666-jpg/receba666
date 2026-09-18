@@ -14,3 +14,31 @@ Projeto privado de visual novel cinematográfica em Ren'Py, inicialmente focado 
 A implementação deve acontecer por branches e Pull Requests. A branch `main` representa apenas estados revisados.
 
 Leia `AGENTS.md` e a documentação em `docs/` antes de alterar o projeto.
+
+## Fundação executável
+
+A branch `codex/renpy-foundation` contém uma cena técnica curta e original. Ela
+exercita o Scene Director data-driven, localização PT-BR/EN por ID estável,
+modos Estático/Cinematográfico, menus, histórico e save/load. Não contém texto,
+arte ou áudio de Re:Zero.
+
+### Validação local
+
+Com Python 3 disponível:
+
+```powershell
+python tools/validate.py
+python -m unittest discover -s tests -v
+```
+
+Com o Ren'Py SDK 8.5.3, execute a partir da raiz do projeto:
+
+```powershell
+<python-do-sdk> <sdk>/renpy.py . lint
+<python-do-sdk> <sdk>/renpy.py . test foundation --report-detailed
+```
+
+O preview de desenvolvimento aceita as variáveis `LN_PREVIEW_SCENE`,
+`LN_PREVIEW_ID`, `LN_PREVIEW_LANGUAGE` (`pt_BR`/`en`) e `LN_PREVIEW_MODE`
+(`static`/`cinematic`). Elas permitem abrir diretamente a cena/posição desejada
+sem criar um fluxo separado de conteúdo.
