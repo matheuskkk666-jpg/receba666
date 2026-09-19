@@ -44,7 +44,7 @@ init python:
         store.reading_context = "memory_replay"
         prepare_position(memory["replay_start_id"], False)
 
-    def finish_memory_replay():
+    def restore_memory_replay():
         snapshot = store.memory_replay_snapshot
         store.reading_context = "normal"
         if snapshot:
@@ -59,6 +59,12 @@ init python:
             apply_direction(director_state)
         store.memory_replay_snapshot = None
         store.memory_replay_target = None
+
+    def finish_memory_replay():
+        restore_memory_replay()
+
+    def cancel_memory_replay():
+        restore_memory_replay()
 
 label start:
     jump journey_start
@@ -88,6 +94,11 @@ label memory_replay_start:
 label memory_replay_return:
     call screen memories
     return
+
+label memory_replay_cancel:
+    $ cancel_memory_replay()
+    hide screen scene_art onlayer master
+    jump memory_replay_return
 
 label reading_loop:
     show screen scene_art onlayer master

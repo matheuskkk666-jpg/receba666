@@ -161,7 +161,28 @@ class FoundationTests(unittest.TestCase):
         self.project["memories"].append(broken)
         errors = self.errors()
         self.assertTrue(any("duplicate/empty memory ID" in error for error in errors))
-        self.assertIn("invalid memory narrative trigger: " + broken["id"], errors)
+        self.assertIn("invalid seen_id unlock: memory: " + broken["id"], errors)
+
+    def test_fact_validation_rejects_invalid_conditions_and_duplicate_ids(self):
+        character = self.project["memory_by_id"]["memory.character.lia"]
+        fact = character["facts"][0]
+        fact["unlock"] = {"seen_id": "missing"}
+        self.assertIn("invalid seen_id unlock: fact: " + fact["id"], self.errors())
+        fact["unlock"] = {"seen_scene": "missing"}
+        self.assertIn("invalid seen_scene unlock: fact: " + fact["id"], self.errors())
+        fact["unlock"] = {"chapter": "missing"}
+        self.assertIn("invalid chapter unlock: fact: " + fact["id"], self.errors())
+        fact["unlock"] = {"flag": "unsupported"}
+        self.assertIn("invalid unlock condition: fact: " + fact["id"], self.errors())
+        fact["unlock"] = {"seen_id": "test.ch01.observatory.0002"}
+        character["facts"].append(copy.deepcopy(fact))
+        self.assertIn("invalid memory fact: " + character["id"], self.errors())
+
+    def test_memory_localization_requires_ui_fields(self):
+        self.project["memory_editions"]["en"]["memory.illustration.observatory"].pop("title")
+        self.assertIn("incomplete en memory metadata: memory.illustration.observatory", self.errors())
+        self.project["memory_editions"]["pt_BR"]["memory.fact.lia.signal"]["text"] = ""
+        self.assertIn("incomplete pt_BR memory fact: memory.fact.lia.signal", self.errors())
 
     def test_memory_localization_has_independent_editions(self):
         memory_id = "memory.illustration.observatory"

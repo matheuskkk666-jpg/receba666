@@ -73,15 +73,13 @@ def canonical_furthest_id(furthest_id, seen_ids, narrative_index):
     valid = [narrative_id for narrative_id in candidates if narrative_id in narrative_index]
     return max(valid, key=narrative_index.__getitem__) if valid else None
 
-def memory_unlocks(condition, seen_ids, seen_scenes, unlocked_chapters, flags=()):
+def memory_unlocks(condition, seen_ids, seen_scenes, unlocked_chapters):
     if "seen_id" in condition:
         return condition["seen_id"] in seen_ids
     if "seen_scene" in condition:
         return condition["seen_scene"] in seen_scenes
     if "chapter" in condition:
         return condition["chapter"] in unlocked_chapters
-    if "flag" in condition:
-        return condition["flag"] in flags
     return False
 
 def advance_progress(seen_ids, furthest_id, narrative_id, narrative_index):
@@ -136,6 +134,19 @@ def validate(project, root):
                 errors.append("duplicate/empty " + label + ": " + str(key))
             seen.add(key)
         return seen
+    def validate_unlock(condition, label):
+        if not isinstance(condition, dict) or len(condition) != 1:
+            errors.append("invalid unlock condition: " + label)
+            return
+        key, value = next(iter(condition.items()))
+        if key == "seen_id" and value not in ids:
+            errors.append("invalid seen_id unlock: " + label)
+        elif key == "seen_scene" and value not in scenes:
+            errors.append("invalid seen_scene unlock: " + label)
+        elif key == "chapter" and value not in chapters:
+            errors.append("invalid chapter unlock: " + label)
+        elif key not in {"seen_id", "seen_scene", "chapter"}:
+            errors.append("invalid unlock condition: " + label)
     ids = check_unique(project["narrative"], "narrative ID")
     scenes = check_unique(project["scenes"], "scene ID")
     chapters = check_unique(project["chapters"], "chapter ID")
@@ -225,23 +236,14 @@ def validate(project, root):
             if not (Path(root) / path).is_file():
                 errors.append("missing asset: " + path)
     allowed_categories = {"illustrations", "characters", "scenes", "death_memories"}
+    fact_ids = set()
     for memory in project["memories"]:
         memory_id = memory["id"]
         if memory.get("category") not in allowed_categories:
             errors.append("invalid memory category: " + memory_id)
         if memory.get("chapter_id") not in chapters:
             errors.append("invalid memory chapter: " + memory_id)
-        unlock = memory.get("unlock")
-        if not isinstance(unlock, dict) or len(unlock) != 1:
-            errors.append("invalid memory unlock: " + memory_id)
-        elif "seen_id" in unlock and unlock["seen_id"] not in ids:
-            errors.append("invalid memory narrative trigger: " + memory_id)
-        elif "seen_scene" in unlock and unlock["seen_scene"] not in scenes:
-            errors.append("invalid memory scene trigger: " + memory_id)
-        elif "chapter" in unlock and unlock["chapter"] not in chapters:
-            errors.append("invalid memory chapter trigger: " + memory_id)
-        elif next(iter(unlock)) not in {"seen_id", "seen_scene", "chapter", "flag"}:
-            errors.append("invalid memory unlock: " + memory_id)
+        validate_unlock(memory.get("unlock"), "memory: " + memory_id)
         if memory.get("asset") and not (Path(root) / memory["asset"]).is_file():
             errors.append("missing memory asset: " + memory_id)
         if memory.get("category") in {"scenes", "death_memories"}:
@@ -252,13 +254,24 @@ def validate(project, root):
             if memory.get("first_narrative_id") not in ids:
                 errors.append("invalid memory character: " + memory_id)
             for fact in memory.get("facts", []):
-                if not fact.get("id") or not isinstance(fact.get("unlock"), dict):
+                fact_id = fact.get("id")
+                if not fact_id or fact_id in fact_ids:
                     errors.append("invalid memory fact: " + memory_id)
+                fact_ids.add(fact_id)
+                validate_unlock(fact.get("unlock"), "fact: " + str(fact_id))
         for lang in LANGUAGES:
             localized = project["memory_editions"][lang]
             if memory_id not in localized:
                 errors.append("missing " + lang + " memory: " + memory_id)
+                continue
+            metadata = localized[memory_id]
+            fields = ("name", "description") if memory.get("category") == "characters" else ("title", "description")
+            if any(not str(metadata.get(field, "")).strip() for field in fields):
+                errors.append("incomplete " + lang + " memory metadata: " + memory_id)
             for fact in memory.get("facts", []):
-                if fact["id"] not in localized:
-                    errors.append("missing " + lang + " memory fact: " + fact["id"])
+                fact_id = fact.get("id")
+                if fact_id not in localized:
+                    errors.append("missing " + lang + " memory fact: " + str(fact_id))
+                elif not str(localized[fact_id].get("text", "")).strip():
+                    errors.append("incomplete " + lang + " memory fact: " + fact_id)
     return errors

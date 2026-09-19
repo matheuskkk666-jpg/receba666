@@ -13,9 +13,13 @@ screen pause_menu():
         null height 12
         textbutton ui_text("resume") action Return()
         textbutton ui_text("history") action ShowMenu("history")
-        textbutton ui_text("save") action ShowMenu("save")
-        textbutton ui_text("load") action ShowMenu("load")
-        textbutton ui_text("chapters") action ShowMenu("chapters")
-        textbutton ui_text("settings") action ShowMenu("settings")
-        textbutton ui_text("main") action Confirm(ui_text("confirm"), [Function(controlled_menu_exit), MainMenu(confirm=False)], Return())
+        if reading_context == "memory_replay":
+            textbutton ui_text("settings") action ShowMenu("settings")
+            textbutton ui_text("return_memories") id "return_memories" action Jump("memory_replay_cancel")
+        else:
+            textbutton ui_text("save") id "pause_save" action ShowMenu("save")
+            textbutton ui_text("load") id "pause_load" action ShowMenu("load")
+            textbutton ui_text("chapters") id "pause_chapters" action ShowMenu("chapters")
+            textbutton ui_text("settings") action ShowMenu("settings")
+            textbutton ui_text("main") id "pause_main" action Confirm(ui_text("confirm"), [Function(controlled_menu_exit), MainMenu(confirm=False)], Return())
     key "game_menu" action Return()

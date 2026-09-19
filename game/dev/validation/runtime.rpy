@@ -235,6 +235,28 @@ testsuite foundation:
         assert eval persistent.resume_state == replay_resume
         assert eval persistent.seen_ids == replay_seen
         assert eval persistent.furthest_narrative_id == replay_furthest
-        run Function(set_edition, "en")
-        click expression ui_text("illustrations")
-        assert eval memory_metadata("memory.illustration.observatory")["title"] == "Light at the Observatory"
+        $ cancel_resume = dict(persistent.resume_state)
+        $ cancel_seen = set(persistent.seen_ids)
+        $ cancel_scenes = set(persistent.seen_scenes)
+        $ cancel_furthest = persistent.furthest_narrative_id
+        $ cancel_chapters = set(persistent.unlocked_chapter_ids)
+        click expression ui_text("scenes")
+        click expression memory_metadata("memory.scene.first_signal")["title"] until screen "say"
+        run ShowMenu("pause_menu")
+        assert screen "pause_menu"
+        assert eval renpy.get_widget("pause_menu", "pause_save") is None
+        assert eval renpy.get_widget("pause_menu", "pause_load") is None
+        assert eval renpy.get_widget("pause_menu", "pause_chapters") is None
+        assert eval renpy.get_widget("pause_menu", "pause_main") is None
+        click id "return_memories"
+        assert screen "memories"
+        assert eval reading_context == "normal"
+        assert eval memory_replay_target is None and memory_replay_snapshot is None
+        assert eval persistent.resume_state == cancel_resume
+        assert eval persistent.seen_ids == cancel_seen
+        assert eval persistent.seen_scenes == cancel_scenes
+        assert eval persistent.furthest_narrative_id == cancel_furthest
+        assert eval persistent.unlocked_chapter_ids == cancel_chapters
+        click expression ui_text("back") until screen "main_menu"
+        click id "continue_journey" until screen "say"
+        assert eval current_id == "test.ch01.observatory.0002"
