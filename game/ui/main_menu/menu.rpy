@@ -24,6 +24,8 @@ screen main_menu():
             textbutton ui_text("start") id "start_journey" action start_journey_action() style "journey_primary_button"
         if has_journey_progress():
             textbutton ui_text("chapters") id "journey_chapters" action ShowMenu("chapters")
+        if has_memories():
+            textbutton ui_text("memories") id "journey_memories" action ShowMenu("memories")
         textbutton ui_text("settings") action ShowMenu("settings")
         textbutton ui_text("exit") action Quit(confirm=False)
 

@@ -27,5 +27,13 @@
   "restart_journey_confirm": "Start again from the beginning? Your discoveries will remain unlocked.",
   "locked_chapter": "???",
   "yes": "Confirm",
-  "no": "Cancel"
+  "no": "Cancel",
+  "characters": "Characters",
+  "illustrations": "Illustrations",
+  "close": "Close",
+  "scenes": "Scenes",
+  "memory_replay": "Replay scene",
+  "death_memories": "Death Memories",
+  "memories": "Memories",
+  "facts": "Revealed facts"
 }

@@ -27,5 +27,13 @@
   "restart_journey_confirm": "Começar novamente a partir do início? Suas descobertas continuarão desbloqueadas.",
   "locked_chapter": "???",
   "yes": "Confirmar",
-  "no": "Cancelar"
+  "no": "Cancelar",
+  "characters": "Personagens",
+  "illustrations": "Ilustrações",
+  "close": "Fechar",
+  "scenes": "Cenas",
+  "memory_replay": "Rever cena",
+  "death_memories": "Memórias de Morte",
+  "memories": "Memórias",
+  "facts": "Fatos revelados"
 }

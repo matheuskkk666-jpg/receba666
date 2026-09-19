@@ -16,6 +16,9 @@ default persistent.unlocked_chapter_ids = set()
 default persistent.resume_state = None
 default persistent.progress_schema = 2
 default persistent.last_autosave_reason = None
+default reading_context = "normal"
+default memory_replay_target = None
+default memory_replay_snapshot = None
 
 init python:
     def migrate_legacy_progress():
@@ -78,6 +81,23 @@ init python:
 
     def has_journey_progress():
         return bool(persistent.unlocked_chapter_ids)
+
+    def unlock_condition_met(condition):
+        return memory_unlocks(condition, persistent.seen_ids, persistent.seen_scenes, persistent.unlocked_chapter_ids)
+
+    def is_memory_unlocked(memory_id):
+        memory = project_data["memory_by_id"].get(memory_id)
+        return bool(memory and unlock_condition_met(memory["unlock"]))
+
+    def memory_entries(category):
+        return [entry for entry in project_data["memories"] if entry["category"] == category and is_memory_unlocked(entry["id"])]
+
+    def has_memories():
+        return any(is_memory_unlocked(entry["id"]) for entry in project_data["memories"])
+
+    def unlocked_memory_facts(memory_id):
+        memory = project_data["memory_by_id"][memory_id]
+        return [fact for fact in memory.get("facts", []) if unlock_condition_met(fact["unlock"])]
 
     def is_chapter_unlocked(chapter_id):
         return chapter_id in persistent.unlocked_chapter_ids

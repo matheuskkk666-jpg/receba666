@@ -1,0 +1,13 @@
+{
+  "memory.illustration.observatory":{"title":"Light at the Observatory","description":"The first light remains on."},
+  "memory.illustration.window":{"title":"Beyond the Window","description":"The watch finds a new perspective."},
+  "memory.character.lia":{"name":"Lia","description":"A voice answering the watch."},
+  "memory.character.unseen":{"name":"Nora","description":"A distant presence."},
+  "memory.scene.first_signal":{"title":"The First Signal","description":"Where the conversation begins."},
+  "memory.scene.window":{"title":"Beyond the Window","description":"A return to the rooftop."},
+  "memory.death.fading_signal":{"title":"The Signal That Faded","description":"An interrupted record."},
+  "memory.death.unseen":{"title":"The Silent Fall","description":"A later record."},
+  "memory.fact.lia.signal":{"text":"Lia answers the observatory light."},
+  "memory.fact.lia.window":{"text":"Lia knows the watch's window."},
+  "memory.fact.unseen":{"text":"Nora arrives when the night ends."}
+}

@@ -190,3 +190,51 @@ testsuite foundation:
         assert id "confirm_message"
         click expression ui_text("no") until not screen "confirm"
         assert screen "main_menu"
+
+    testcase memories_unlocks_and_replay_are_isolated:
+        $ persistent.edition = "pt_BR"
+        $ persistent.seen_ids = set()
+        $ persistent.seen_scenes = set()
+        $ persistent.furthest_narrative_id = None
+        $ persistent.furthest_position = -1
+        $ persistent.unlocked_chapter_ids = set()
+        $ persistent.resume_state = None
+        click id "start_journey" until screen "say"
+        assert eval is_memory_unlocked("memory.illustration.observatory")
+        assert eval not is_memory_unlocked("memory.illustration.window")
+        assert eval not is_memory_unlocked("memory.death.fading_signal")
+        advance
+        assert eval current_id == "test.ch01.observatory.0002"
+        run MainMenu(confirm=False)
+        assert screen "main_menu"
+        assert eval renpy.get_widget("main_menu", "journey_memories") is not None
+        click id "journey_memories"
+        assert screen "memories"
+        click expression ui_text("illustrations")
+        assert screen "memory_category"
+        assert eval len(memory_entries("illustrations")) == 1
+        click expression memory_metadata("memory.illustration.observatory")["title"]
+        assert screen "memory_illustration"
+        click expression ui_text("back")
+        click expression ui_text("back")
+        click expression ui_text("characters")
+        assert eval len(memory_entries("characters")) == 1
+        click expression memory_metadata("memory.character.lia")["name"]
+        assert screen "memory_character"
+        assert eval len(unlocked_memory_facts("memory.character.lia")) == 1
+        click expression ui_text("back")
+        click expression ui_text("back")
+        click expression ui_text("scenes")
+        $ replay_resume = dict(persistent.resume_state)
+        $ replay_seen = set(persistent.seen_ids)
+        $ replay_furthest = persistent.furthest_narrative_id
+        click expression memory_metadata("memory.scene.first_signal")["title"] until screen "say"
+        assert eval reading_context == "memory_replay"
+        advance until screen "memories"
+        assert eval reading_context == "normal"
+        assert eval persistent.resume_state == replay_resume
+        assert eval persistent.seen_ids == replay_seen
+        assert eval persistent.furthest_narrative_id == replay_furthest
+        run Function(set_edition, "en")
+        click expression ui_text("illustrations")
+        assert eval memory_metadata("memory.illustration.observatory")["title"] == "Light at the Observatory"

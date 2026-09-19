@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "game/python-packages"))
-from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, resolve, unlocked_chapters, validate, merge
+from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, memory_unlocks, resolve, unlocked_chapters, validate, merge
 
 class FoundationTests(unittest.TestCase):
     def setUp(self):
@@ -140,6 +140,33 @@ class FoundationTests(unittest.TestCase):
         reordered_index = {"furthest": 0, "first": 1, "later": 2}
         self.assertEqual(canonical_furthest_id(furthest_id, seen_ids, reordered_index), "furthest")
         self.assertEqual(canonical_furthest_id("removed", {"first"}, reordered_index), "first")
+
+    def test_memory_unlocks_and_future_entries_stay_hidden(self):
+        early, future = self.project["memories"][0], self.project["memories"][1]
+        seen = {"test.ch01.observatory.0001"}
+        self.assertTrue(memory_unlocks(early["unlock"], seen, set(), set()))
+        self.assertFalse(memory_unlocks(future["unlock"], seen, set(), set()))
+
+    def test_memory_character_and_fact_unlocks_are_independent(self):
+        character = self.project["memory_by_id"]["memory.character.lia"]
+        seen = {"test.ch01.observatory.0002"}
+        self.assertTrue(memory_unlocks(character["unlock"], seen, set(), set()))
+        self.assertTrue(memory_unlocks(character["facts"][0]["unlock"], seen, set(), set()))
+        self.assertFalse(memory_unlocks(character["facts"][1]["unlock"], seen, set(), set()))
+
+    def test_memory_validation_rejects_bad_references_and_duplicate_ids(self):
+        broken = copy.deepcopy(self.project["memories"][0])
+        broken["id"] = self.project["memories"][0]["id"]
+        broken["unlock"] = {"seen_id": "unknown"}
+        self.project["memories"].append(broken)
+        errors = self.errors()
+        self.assertTrue(any("duplicate/empty memory ID" in error for error in errors))
+        self.assertIn("invalid memory narrative trigger: " + broken["id"], errors)
+
+    def test_memory_localization_has_independent_editions(self):
+        memory_id = "memory.illustration.observatory"
+        self.assertEqual(self.project["memory_editions"]["pt_BR"][memory_id]["title"], "Luz no observatório")
+        self.assertEqual(self.project["memory_editions"]["en"][memory_id]["title"], "Light at the Observatory")
 
     def test_manifest_combines_multiple_fragments_deterministically(self):
         with self.fragment_project() as root:
