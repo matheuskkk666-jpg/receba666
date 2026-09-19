@@ -1,5 +1,5 @@
 init -80 python:
-    from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, memory_unlocks, presentation_for, presentation_segment, resolve, resolve_presentation_text, unlocked_chapters
+    from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, memory_unlocks, presentation_for, presentation_segment, resolve, resolve_presentation_direction, resolve_presentation_text, unlocked_chapters
     def read_data(path):
         with renpy.open_file(path) as stream:
             return stream.read().decode("utf-8")

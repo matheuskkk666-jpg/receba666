@@ -9,5 +9,6 @@
   "memory.death.unseen":{"title":"A queda silenciosa","description":"Um registro posterior."},
   "memory.fact.lia.signal":{"text":"Lia responde à luz do observatório."},
   "memory.fact.lia.window":{"text":"Lia conhece a janela da vigia."},
-  "memory.fact.unseen":{"text":"Nora chega quando a noite termina."}
+  "memory.fact.unseen":{"text":"Nora chega quando a noite termina."},
+  "memory.scene.arc01_prologue":{"title":"Prólogo","description":"O instante final que abriu a jornada."}
 }

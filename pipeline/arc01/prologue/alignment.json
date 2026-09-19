@@ -16,7 +16,7 @@
         "v01.prologue.en.s001"
       ],
       "kind": "narration",
-      "scene_hint": "arc01.prologue.runtime_placeholder",
+      "scene_hint": "arc01.prologue.sc001",
       "status": "source_exact",
       "editorial_status": "reviewed"
     },
@@ -31,7 +31,7 @@
         "v01.prologue.en.s002"
       ],
       "kind": "narration",
-      "scene_hint": "arc01.prologue.runtime_placeholder",
+      "scene_hint": "arc01.prologue.sc001",
       "status": "source_exact",
       "editorial_status": "reviewed"
     },
@@ -46,7 +46,7 @@
         "v01.prologue.en.s003"
       ],
       "kind": "narration",
-      "scene_hint": "arc01.prologue.runtime_placeholder",
+      "scene_hint": "arc01.prologue.sc001",
       "status": "source_exact",
       "editorial_status": "reviewed"
     },
@@ -61,7 +61,7 @@
         "v01.prologue.en.s004"
       ],
       "kind": "narration",
-      "scene_hint": "arc01.prologue.runtime_placeholder",
+      "scene_hint": "arc01.prologue.sc001",
       "status": "source_exact",
       "editorial_status": "reviewed"
     },
@@ -76,7 +76,7 @@
         "v01.prologue.en.s005"
       ],
       "kind": "narration",
-      "scene_hint": "arc01.prologue.runtime_placeholder",
+      "scene_hint": "arc01.prologue.sc001",
       "status": "source_exact",
       "editorial_status": "reviewed"
     },
@@ -91,7 +91,7 @@
         "v01.prologue.en.s006"
       ],
       "kind": "thought",
-      "scene_hint": "arc01.prologue.runtime_placeholder",
+      "scene_hint": "arc01.prologue.sc001",
       "status": "source_exact",
       "editorial_status": "reviewed"
     }

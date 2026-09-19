@@ -129,7 +129,8 @@ label reading_loop:
         $ next_presentation = next_presentation_id()
         if next_presentation is not None:
             $ store.current_presentation_id = next_presentation
-            $ update_resume_position()
+            if reading_context == "normal":
+                $ update_resume_position()
         else:
             if reading_context == "normal":
                 $ record_position()

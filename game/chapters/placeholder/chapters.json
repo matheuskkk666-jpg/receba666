@@ -6,7 +6,7 @@
     "first_narrative_id": "arc01.prologue.0001",
     "last_narrative_id": "arc01.prologue.0006",
     "narrative_ids": ["arc01.prologue.0001", "arc01.prologue.0002", "arc01.prologue.0003", "arc01.prologue.0004", "arc01.prologue.0005", "arc01.prologue.0006"],
-    "scenes": ["arc01.prologue.runtime_placeholder"]
+    "scenes": ["arc01.prologue.sc001"]
   },
   {
     "id": "test.arc01.ch01",

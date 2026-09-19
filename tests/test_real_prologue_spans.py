@@ -25,7 +25,7 @@ class RealPrologueSpanTests(unittest.TestCase):
   alignment=json.loads((ROOT/'pipeline/arc01/prologue/alignment.json').read_text(encoding='utf8'))
   self.assertEqual([u['narrative_id'] for u in alignment['units']], [f'arc01.prologue.{i:04d}' for i in range(1,7)])
   self.assertTrue(all(len(u['pt_BR'])==len(u['en'])==1 for u in alignment['units']))
-  self.assertTrue(all(u.get('scene_hint')=='arc01.prologue.runtime_placeholder' for u in alignment['units']))
+  self.assertTrue(all(u.get('scene_hint')=='arc01.prologue.sc001' for u in alignment['units']))
 
  def test_reimported_translations_preserve_all_span_characters(self):
   for language in ('pt_BR','en'):

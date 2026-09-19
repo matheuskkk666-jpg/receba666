@@ -6,5 +6,6 @@
   {"id":"memory.scene.first_signal","category":"scenes","unlock":{"seen_scene":"test_observatory"},"chapter_id":"test.arc01.ch01","replay_start_id":"test.ch01.observatory.0001","replay_end_id":"test.ch01.observatory.0002"},
   {"id":"memory.scene.window","category":"scenes","unlock":{"seen_scene":"test_rooftop"},"chapter_id":"test.arc01.ch02","replay_start_id":"test.ch02.rooftop.0001","replay_end_id":"test.ch02.rooftop.0002"},
   {"id":"memory.death.fading_signal","category":"death_memories","unlock":{"seen_id":"test.ch02.rooftop.0002"},"chapter_id":"test.arc01.ch02","replay_start_id":"test.ch02.rooftop.0001","replay_end_id":"test.ch02.rooftop.0002","asset":"assets/backgrounds/observatory.png"},
-  {"id":"memory.death.unseen","category":"death_memories","unlock":{"seen_id":"test.ch02.rooftop.0003"},"chapter_id":"test.arc01.ch02","replay_start_id":"test.ch02.rooftop.0002","replay_end_id":"test.ch02.rooftop.0003","asset":"assets/backgrounds/observatory.png"}
+  {"id":"memory.death.unseen","category":"death_memories","unlock":{"seen_id":"test.ch02.rooftop.0003"},"chapter_id":"test.arc01.ch02","replay_start_id":"test.ch02.rooftop.0002","replay_end_id":"test.ch02.rooftop.0003","asset":"assets/backgrounds/observatory.png"},
+  {"id":"memory.scene.arc01_prologue","category":"scenes","unlock":{"seen_id":"arc01.prologue.0006"},"chapter_id":"arc01.prologue","replay_start_id":"arc01.prologue.0001","replay_end_id":"arc01.prologue.0006"}
 ]

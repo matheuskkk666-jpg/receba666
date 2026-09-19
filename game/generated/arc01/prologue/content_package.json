@@ -34,7 +34,7 @@
         "arc01.prologue.0006"
       ],
       "scene_hints": [
-        "arc01.prologue.runtime_placeholder"
+        "arc01.prologue.sc001"
       ],
       "first_narrative_id": "arc01.prologue.0001",
       "last_narrative_id": "arc01.prologue.0006"

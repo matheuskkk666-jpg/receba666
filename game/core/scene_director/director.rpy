@@ -25,7 +25,9 @@ init python:
     def enter_frame(index):
         frame = frames[index]
         store.current_id = frame["id"]
-        store.director_state = dict(frame["state"])
+        store.director_state = resolve_presentation_direction(
+            project_data, current_id, current_presentation_id
+        )
         if store.reading_context == "normal":
             if presentation_for(project_data, current_id)[0].get("synthetic"):
                 record_position()

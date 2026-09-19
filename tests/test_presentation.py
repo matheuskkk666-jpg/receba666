@@ -13,6 +13,7 @@ from foundation.model import (
     presentation_for,
     presentation_segment,
     resolve_presentation_text,
+    resolve_presentation_direction,
     validate,
 )
 
@@ -78,6 +79,18 @@ class PresentationTests(unittest.TestCase):
             for narrative_id in self.project["presentation_by_narrative"]
             for segment in presentation_for(self.project, narrative_id)
         ))
+
+    def test_real_segments_have_valid_beats_and_visual_requirements(self):
+        for narrative_id, segments in self.project["presentation_by_narrative"].items():
+            for segment in segments:
+                self.assertIn(segment["beat"], self.project["beats"])
+                state = resolve_presentation_direction(self.project, narrative_id, segment["id"])
+                self.assertIn(state["composition_id"], self.project["art_requirement_by_id"])
+        final = resolve_presentation_direction(
+            self.project, "arc01.prologue.0006", "arc01.prologue.0006.p004"
+        )
+        self.assertEqual(final["lighting"], "#000000ff")
+        self.assertEqual(final["animation"], "none")
 
     def test_old_content_gets_transient_whole_translation_fallback(self):
         narrative_id = "test.ch01.observatory.0001"

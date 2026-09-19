@@ -9,5 +9,6 @@
   "memory.death.unseen":{"title":"The Silent Fall","description":"A later record."},
   "memory.fact.lia.signal":{"text":"Lia answers the observatory light."},
   "memory.fact.lia.window":{"text":"Lia knows the watch's window."},
-  "memory.fact.unseen":{"text":"Nora arrives when the night ends."}
+  "memory.fact.unseen":{"text":"Nora arrives when the night ends."},
+  "memory.scene.arc01_prologue":{"title":"Prologue","description":"The final moment that opened the journey."}
 }
