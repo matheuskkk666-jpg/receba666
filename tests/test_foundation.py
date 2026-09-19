@@ -131,8 +131,8 @@ class FoundationTests(unittest.TestCase):
         self.assertEqual(resolved_ids, expected_ids)
         self.assertEqual(len(resolved_ids), 25)
 
-    def test_production_visual_slots_resolve_with_development_fallbacks(self):
-        planned = {
+    def test_production_visual_slots_resolve_ready_assets(self):
+        production = {
             "bg.arc01.prologue.unknown_ground",
             "comp.arc01.prologue.protagonist_down",
             "comp.arc01.prologue.black_boot",
@@ -144,18 +144,18 @@ class FoundationTests(unittest.TestCase):
             asset_id
             for kind in ("background", "composition", "hero_cg")
             for asset_id, entry in self.project["assets"].get(kind, {}).items()
-            if isinstance(entry, dict) and entry.get("status") == "planned"
+            if isinstance(entry, dict) and entry.get("status") == "ready"
         }
-        self.assertEqual(slots, planned)
+        self.assertEqual(slots, production)
         for number in range(1, 7):
             narrative_id = f"arc01.prologue.{number:04d}"
             for segment in presentation_for(self.project, narrative_id):
                 state = resolve_presentation_direction(self.project, narrative_id, segment["id"])
                 visual = resolve_scene_visual_slots(self.project, state)
                 self.assertEqual(visual["background"]["id"], "bg.arc01.prologue.unknown_ground")
-                self.assertEqual(visual["background"]["status"], "planned")
-                self.assertIn(visual["foreground"]["id"], planned)
-                self.assertEqual(visual["foreground"]["status"], "planned")
+                self.assertEqual(visual["background"]["status"], "ready")
+                self.assertIn(visual["foreground"]["id"], production)
+                self.assertEqual(visual["foreground"]["status"], "ready")
                 self.assertTrue(visual["foreground"]["development_placeholder"])
 
     def test_legacy_scene_stays_background_only(self):
