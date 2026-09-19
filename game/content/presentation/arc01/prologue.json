@@ -4,7 +4,7 @@
     "arc01.prologue.0001": [
       {
         "id": "arc01.prologue.0001.p001",
-        "kind": "thought",
+        "kind": "dialogue",
         "speaker": null,
         "ranges": {
           "pt_BR": {"start": 0, "end": 26},
@@ -22,7 +22,7 @@
       },
       {
         "id": "arc01.prologue.0001.p003",
-        "kind": "thought",
+        "kind": "dialogue",
         "speaker": null,
         "ranges": {
           "pt_BR": {"start": 320, "end": 378},
@@ -129,7 +129,7 @@
       },
       {
         "id": "arc01.prologue.0005.p002",
-        "kind": "narration",
+        "kind": "dialogue",
         "speaker": null,
         "ranges": {
           "pt_BR": {"start": 247, "end": 477},
@@ -149,7 +149,7 @@
       },
       {
         "id": "arc01.prologue.0006.p002",
-        "kind": "thought",
+        "kind": "dialogue",
         "speaker": null,
         "ranges": {
           "pt_BR": {"start": 385, "end": 725},

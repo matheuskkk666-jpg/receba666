@@ -76,16 +76,16 @@ class FoundationTests(unittest.TestCase):
                 self.assertEqual(resolved_ids, {e["id"] for e in self.project["editions"][lang]})
 
     def test_chapter_order_and_unlocks_use_canonical_data(self):
-        first, second = self.project["chapter_order"]
+        first, second = self.project["chapter_order"][1:]
         self.assertEqual(chapter_for_narrative(self.project, "test.ch02.rooftop.0001"), second)
         self.assertEqual(unlocked_chapters(self.project, -1), set())
         self.assertEqual(
             unlocked_chapters(self.project, self.project["narrative_index"]["test.ch01.observatory.0006"]),
-            {first},
+            {"arc01.prologue", first},
         )
         self.assertEqual(
             unlocked_chapters(self.project, self.project["narrative_index"]["test.ch02.rooftop.0001"]),
-            {first, second},
+            {"arc01.prologue", first, second},
         )
 
     def test_loaded_indexes_reconstruct_each_narrative_position(self):
@@ -100,7 +100,7 @@ class FoundationTests(unittest.TestCase):
             self.assertEqual(frames, resolve(self.project, scene_id))
 
     def test_chapter_titles_are_independent_editions(self):
-        chapter_id = self.project["chapter_order"][1]
+        chapter_id = "test.arc01.ch02"
         self.assertEqual(self.project["chapter_editions"]["pt_BR"][chapter_id]["title"], "Depois da Janela")
         self.assertEqual(self.project["chapter_editions"]["en"][chapter_id]["title"], "Beyond the Window")
 

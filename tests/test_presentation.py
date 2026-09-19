@@ -57,7 +57,7 @@ class PresentationTests(unittest.TestCase):
         self.assertEqual(presentation_segment(self.project, narrative_id, segment_id)["ordinal"], 0)
 
     def test_old_content_gets_transient_whole_translation_fallback(self):
-        narrative_id = self.project["narrative_order"][0]
+        narrative_id = "test.ch01.observatory.0001"
         segments = presentation_for(self.project, narrative_id)
         self.assertEqual(len(segments), 1)
         self.assertTrue(segments[0]["synthetic"])

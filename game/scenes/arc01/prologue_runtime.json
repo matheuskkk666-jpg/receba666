@@ -1,0 +1,11 @@
+[
+  {
+    "id": "arc01.prologue.runtime_placeholder",
+    "defaults": {"background": "observatory", "music": "quiet", "ambience": null, "lighting": "#0b1429", "animation": "none"},
+    "sequence": [
+      {"dialogue": "arc01.prologue.0001"}, {"dialogue": "arc01.prologue.0002"},
+      {"dialogue": "arc01.prologue.0003"}, {"dialogue": "arc01.prologue.0004"},
+      {"dialogue": "arc01.prologue.0005"}, {"dialogue": "arc01.prologue.0006"}
+    ]
+  }
+]

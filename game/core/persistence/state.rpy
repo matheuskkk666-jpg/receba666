@@ -1,6 +1,7 @@
 # Only narrative and resolved direction belong to save slots; edition/mode are preferences.
 default current_scene = None
 default current_id = None
+default current_presentation_id = None
 default current_chapter = None
 default chapter_opening_pending = False
 default chapter_navigation_target = None
@@ -71,10 +72,13 @@ init python:
         scene_id = state.get("scene_id")
         if narrative_id not in project_data["narrative_by_id"]:
             return False
-        return (
+        if not (
             chapter_id == chapter_for_narrative(project_data, narrative_id)
             and scene_id == project_data["narrative_by_id"][narrative_id]["scene"]
-        )
+        ):
+            return False
+        presentation_id = state.get("presentation_id")
+        return presentation_id is None or any(segment["id"] == presentation_id for segment in presentation_for(project_data, narrative_id))
 
     def has_resume_state():
         return is_valid_resume_state(getattr(persistent, "resume_state", None))
@@ -115,13 +119,23 @@ init python:
             return
         chapter_id = chapter_for_narrative(project_data, current_id)
         store.current_chapter = chapter_id
+        available = {segment["id"] for segment in presentation_for(project_data, current_id)}
+        if current_presentation_id not in available:
+            store.current_presentation_id = presentation_for(project_data, current_id)[0]["id"]
         persistent.resume_state = {
             "schema": 3,
             "chapter_id": chapter_id,
             "scene_id": scene_id,
             "narrative_id": current_id,
+            "presentation_id": current_presentation_id,
         }
         renpy.save_persistent()
+
+    def update_resume_position():
+        persistent.resume_state = {
+            "schema": 4, "chapter_id": current_chapter, "scene_id": current_scene,
+            "narrative_id": current_id, "presentation_id": current_presentation_id,
+        }
 
     def record_position():
         persistent.seen_scenes.add(current_scene)
@@ -137,10 +151,11 @@ init python:
         store.current_chapter = chapter_for_narrative(project_data, current_id)
         persistent.unlocked_chapter_ids.add(current_chapter)
         persistent.resume_state = {
-            "schema": 3,
+            "schema": 4,
             "chapter_id": current_chapter,
             "scene_id": current_scene,
             "narrative_id": current_id,
+            "presentation_id": current_presentation_id,
         }
 
     def furthest_narrative_id():
@@ -152,9 +167,10 @@ init python:
 
     def save_metadata(data):
         data["narrative_id"] = current_id
+        data["presentation_id"] = current_presentation_id
         data["scene"] = current_scene
         data["chapter_id"] = current_chapter
-        data["schema"] = 3
+        data["schema"] = 4
     config.save_json_callbacks.append(save_metadata)
     migrate_legacy_progress()
 

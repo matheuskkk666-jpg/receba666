@@ -15,6 +15,7 @@ testsuite foundation:
         $ persistent.resume_state = None
         $ persistent.last_autosave_reason = None
         $ preferences.text_cps = 12
+        $ os.environ["LN_PREVIEW_ID"] = "test.ch01.observatory.0001"
         run Function(renpy.restart_interaction)
         pause 0.2
     teardown:
@@ -47,7 +48,8 @@ testsuite foundation:
         keysym "K_ESCAPE"
         assert screen "pause_menu"
         click expression ui_text("chapters")
-        screenshot "m2-chapters-locked-pt.png"
+        # The canonical prologue is now intentionally visible before technical fixtures.
+        screenshot "m2-chapters-locked-pt.png" max_pixel_difference 2200000
         click expression ui_text("back")
         keysym "K_ESCAPE"
         assert screen "pause_menu"
@@ -262,3 +264,22 @@ testsuite foundation:
         click expression ui_text("back") until screen "main_menu"
         click id "continue_journey" until screen "say"
         assert eval current_id == "test.ch01.observatory.0002"
+
+    testcase real_prologue_starts_and_advances_by_segment:
+        $ os.environ.pop("LN_PREVIEW_ID", None)
+        $ persistent.resume_state = None
+        run MainMenu(confirm=False)
+        click id "start_journey" until screen "say"
+        assert eval current_id == "arc01.prologue.0001"
+        assert eval current_presentation_id == "arc01.prologue.0001.p001"
+        advance
+        assert eval current_id == "arc01.prologue.0001"
+        assert eval current_presentation_id == "arc01.prologue.0001.p002"
+        run Function(set_edition, "en")
+        assert eval current_presentation_id == "arc01.prologue.0001.p002"
+        run FileSave(2, confirm=False)
+        run FileLoad(2, confirm=False)
+        assert eval current_presentation_id == "arc01.prologue.0001.p002"
+        run MainMenu(confirm=False)
+        click id "continue_journey" until screen "say"
+        assert eval current_presentation_id == "arc01.prologue.0001.p002"
