@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "game/python-packages"))
-from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, memory_unlocks, presentation_for, resolve, resolve_presentation_direction, unlocked_chapters, validate, merge
+from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, memory_unlocks, presentation_for, resolve, resolve_presentation_direction, resolve_scene_visual_slots, unlocked_chapters, validate, merge
 
 class FoundationTests(unittest.TestCase):
     def setUp(self):
@@ -107,7 +107,7 @@ class FoundationTests(unittest.TestCase):
             {scene_id},
         )
         scene = self.project["scene_by_id"][scene_id]
-        self.assertEqual(scene["defaults"]["background"], "prologue_ground_placeholder")
+        self.assertEqual(scene["defaults"]["background"], "bg.arc01.prologue.unknown_ground")
         self.assertNotIn("observatory", str(scene).lower())
         self.assertNotIn("test.", str(scene).lower())
 
@@ -124,12 +124,65 @@ class FoundationTests(unittest.TestCase):
                 for segment in presentation_for(self.project, narrative_id):
                     state = resolve_presentation_direction(self.project, narrative_id, segment["id"])
                     resolved_ids.add(segment["id"])
-                    self.assertEqual(state["background"], "prologue_ground_placeholder", mode)
+                    self.assertEqual(state["background"], "bg.arc01.prologue.unknown_ground", mode)
                     self.assertIn(state["composition_id"], self.project["art_requirement_by_id"], mode)
                     self.assertIn(state["shot"], {"low", "detail", "close"}, mode)
                     self.assertIn(state["animation"], {"none", "subtle"}, mode)
         self.assertEqual(resolved_ids, expected_ids)
         self.assertEqual(len(resolved_ids), 25)
+
+    def test_production_visual_slots_resolve_with_development_fallbacks(self):
+        planned = {
+            "bg.arc01.prologue.unknown_ground",
+            "comp.arc01.prologue.protagonist_down",
+            "comp.arc01.prologue.black_boot",
+            "comp.arc01.prologue.second_arrival",
+            "comp.arc01.prologue.hand_contact",
+            "cg.arc01.prologue.final_moment",
+        }
+        slots = {
+            asset_id
+            for kind in ("background", "composition", "hero_cg")
+            for asset_id, entry in self.project["assets"].get(kind, {}).items()
+            if isinstance(entry, dict) and entry.get("status") == "planned"
+        }
+        self.assertEqual(slots, planned)
+        for number in range(1, 7):
+            narrative_id = f"arc01.prologue.{number:04d}"
+            for segment in presentation_for(self.project, narrative_id):
+                state = resolve_presentation_direction(self.project, narrative_id, segment["id"])
+                visual = resolve_scene_visual_slots(self.project, state)
+                self.assertEqual(visual["background"]["id"], "bg.arc01.prologue.unknown_ground")
+                self.assertEqual(visual["background"]["status"], "planned")
+                self.assertIn(visual["foreground"]["id"], planned)
+                self.assertEqual(visual["foreground"]["status"], "planned")
+                self.assertTrue(visual["foreground"]["development_placeholder"])
+
+    def test_legacy_scene_stays_background_only(self):
+        state = resolve(self.project, "test_observatory")[0]["state"]
+        visual = resolve_scene_visual_slots(self.project, state)
+        self.assertEqual(visual["background"]["id"], "observatory")
+        self.assertIsNone(visual["foreground"])
+
+    def test_missing_production_slot_is_rejected(self):
+        self.project["assets"]["composition"].pop("comp.arc01.prologue.black_boot")
+        errors = self.errors()
+        self.assertTrue(any("missing production asset slot: comp.arc01.prologue.black_boot" in error for error in errors))
+        self.assertTrue(any("missing art production slot: comp.arc01.prologue.black_boot" in error for error in errors))
+
+    def test_unknown_composition_is_rejected(self):
+        segment = self.project["presentation_by_narrative"]["arc01.prologue.0001"][0]
+        segment["direction"]["composition_id"] = "comp.arc01.prologue.unknown"
+        self.assertTrue(any("invalid presentation composition" in error for error in self.errors()))
+
+    def test_blackout_keeps_the_hero_slot_resolved(self):
+        state = resolve_presentation_direction(
+            self.project, "arc01.prologue.0006", "arc01.prologue.0006.p004"
+        )
+        visual = resolve_scene_visual_slots(self.project, state)
+        self.assertEqual(visual["foreground"]["asset_type"], "hero_cg")
+        self.assertEqual(visual["foreground"]["id"], "cg.arc01.prologue.final_moment")
+        self.assertEqual(state["lighting"], "#000000ff")
 
     def test_art_plan_is_complete_and_spoiler_aware(self):
         plan = self.project["art_plans"][0]

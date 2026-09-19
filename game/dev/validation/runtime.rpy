@@ -49,7 +49,7 @@ testsuite foundation:
         assert eval current_id == "test.ch01.observatory.0002"
         keysym "K_ESCAPE"
         assert screen "pause_menu"
-        click expression ui_text("chapters")
+        click id "pause_chapters"
         # The canonical prologue is now intentionally visible before technical fixtures.
         screenshot "m2-chapters-locked-pt.png" max_pixel_difference 1000
         click expression ui_text("back")
@@ -76,7 +76,7 @@ testsuite foundation:
         assert eval persistent.furthest_position == project_data["narrative_index"][current_id]
         keysym "K_ESCAPE"
         assert screen "pause_menu"
-        click expression ui_text("chapters")
+        click id "pause_chapters"
         assert screen "chapters"
         assert eval is_chapter_unlocked("test.arc01.ch01") and is_chapter_unlocked("test.arc01.ch02")
         click expression chapter_button_label("test.arc01.ch01")
@@ -273,16 +273,20 @@ testsuite foundation:
         assert eval current_id == "arc01.prologue.0001"
         assert eval current_presentation_id == "arc01.prologue.0001.p001"
         assert eval current_scene == "arc01.prologue.sc001"
-        assert eval director_state["background"] == "prologue_ground_placeholder"
+        assert eval director_state["background"] == "bg.arc01.prologue.unknown_ground"
         assert eval "observatory" not in str(director_state)
+        assert eval scene_visual_assets(director_state)["background"] == "assets/backgrounds/prologue_ground_placeholder.svg"
+        assert eval scene_visual_assets(director_state)["foreground"] == "assets/development/placeholders/arc01/prologue/protagonist_down.svg"
         advance
         assert eval current_id == "arc01.prologue.0001"
         assert eval current_presentation_id == "arc01.prologue.0001.p002"
         advance until eval current_id == "arc01.prologue.0003" and current_presentation_id == "arc01.prologue.0003.p003"
         assert eval director_state["composition_id"] == "comp.arc01.prologue.black_boot"
         assert eval director_state["lighting"] == "#09070fbd"
+        assert eval scene_visual_assets(director_state)["foreground"] == "assets/development/placeholders/arc01/prologue/black_boot.svg"
         advance until eval current_id == "arc01.prologue.0004" and current_presentation_id == "arc01.prologue.0004.p003"
         assert eval presentation_segment(project_data, current_id, current_presentation_id)["kind"] == "dialogue"
+        assert eval scene_visual_assets(director_state)["foreground"] == "assets/development/placeholders/arc01/prologue/second_arrival.svg"
         pause 1.0
         screenshot "m5-prologue-dialogue-pt.png" max_pixel_difference 500
         run Function(set_edition, "en")
@@ -300,10 +304,14 @@ testsuite foundation:
         run MainMenu(confirm=False)
         click id "continue_journey" until screen "say"
         assert eval current_presentation_id == "arc01.prologue.0004.p003"
+        advance until eval current_id == "arc01.prologue.0005" and current_presentation_id == "arc01.prologue.0005.p002"
+        assert eval director_state["composition_id"] == "comp.arc01.prologue.hand_contact"
+        assert eval scene_visual_assets(director_state)["foreground"] == "assets/development/placeholders/arc01/prologue/hand_contact.svg"
         advance until eval current_id == "arc01.prologue.0006" and current_presentation_id == "arc01.prologue.0006.p004"
         assert eval director_state["composition_id"] == "cg.arc01.prologue.final_moment"
         assert eval director_state["lighting"] == "#000000ff"
         assert eval director_state["animation"] == "none"
+        assert eval scene_visual_assets(director_state)["foreground"] == "assets/development/placeholders/arc01/prologue/final_moment.svg"
         advance until screen "main_menu"
         assert eval "arc01.prologue.0006" in persistent.seen_ids
         assert eval not has_resume_state()

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#24131f" fill-opacity="0.7"/>
+  <ellipse cx="850" cy="720" rx="600" ry="210" fill="#6f273a" fill-opacity="0.28"/>
+  <path d="M1120 250 C1300 410 1330 650 1190 810 C1070 710 1040 470 1120 250Z" fill="#d8d5dd" fill-opacity="0.24"/>
+  <text x="960" y="160" text-anchor="middle" fill="#eee0e3" font-family="sans-serif" font-size="28">DEVELOPMENT COMPOSITION · SECOND ARRIVAL</text>
+</svg>

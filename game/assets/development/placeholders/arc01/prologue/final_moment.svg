@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#190a14" fill-opacity="0.78"/>
+  <ellipse cx="960" cy="640" rx="600" ry="210" fill="#a3374d" fill-opacity="0.2"/>
+  <path d="M650 680 C830 540 1090 540 1270 680" fill="none" stroke="#ead5b8" stroke-opacity="0.4" stroke-width="20"/>
+  <rect y="0" width="1920" height="1080" fill="#000000" fill-opacity="0.22"/>
+  <text x="960" y="160" text-anchor="middle" fill="#f1d9c2" font-family="sans-serif" font-size="28">DEVELOPMENT HERO CG · FINAL MOMENT</text>
+</svg>

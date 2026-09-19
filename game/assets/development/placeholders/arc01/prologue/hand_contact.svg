@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#2a1421" fill-opacity="0.66"/>
+  <ellipse cx="960" cy="650" rx="470" ry="150" fill="#76283c" fill-opacity="0.34"/>
+  <path d="M560 620 C720 520 850 650 960 690 C1070 650 1200 520 1360 620" fill="none" stroke="#dfc9b2" stroke-opacity="0.48" stroke-width="42" stroke-linecap="round"/>
+  <text x="960" y="160" text-anchor="middle" fill="#f4dfca" font-family="sans-serif" font-size="28">DEVELOPMENT COMPOSITION · HAND CONTACT</text>
+</svg>

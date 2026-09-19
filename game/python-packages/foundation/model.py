@@ -6,6 +6,12 @@ LANGUAGES = ("pt_BR", "en")
 PRESENTATION_KINDS = ("narration", "dialogue", "thought")
 ART_CATEGORIES = ("Background", "Character/environment composition", "Hero CG")
 REUSE_CLASSES = ("A", "B", "C", "D")
+ART_CATEGORY_ASSET_TYPES = {
+    "Background": "background",
+    "Character/environment composition": "composition",
+    "Hero CG": "hero_cg",
+}
+PRODUCTION_ASSET_STATUSES = ("planned", "ready")
 
 def load_project(root, read=None):
     root = Path(root)
@@ -166,6 +172,38 @@ def resolve_presentation_direction(project, narrative_id, segment_id):
     state = merge(state, segment.get("direction", {}))
     return state
 
+def asset_slot(project, asset_type, asset_id):
+    """Return normalized metadata for a legacy or production visual asset."""
+    entry = project["assets"].get(asset_type, {}).get(asset_id)
+    if entry is None:
+        raise KeyError(asset_type + ":" + asset_id)
+    if isinstance(entry, str):
+        return {
+            "id": asset_id,
+            "asset_type": asset_type,
+            "status": "ready",
+            "path": entry,
+            "development_placeholder": None,
+        }
+    result = copy.deepcopy(entry)
+    result["id"] = asset_id
+    result["asset_type"] = asset_type
+    return result
+
+def resolve_scene_visual_slots(project, state):
+    """Resolve the base plate plus an optional full-frame production layer."""
+    background_id = state.get("background", "observatory")
+    result = {"background": asset_slot(project, "background", background_id), "foreground": None}
+    asset_id = state.get("hero_cg_id") or state.get("composition_id")
+    if asset_id is None:
+        return result
+    requirement = project["art_requirement_by_id"].get(asset_id)
+    if requirement is None:
+        raise KeyError("art requirement:" + asset_id)
+    asset_type = ART_CATEGORY_ASSET_TYPES[requirement["category"]]
+    result["foreground"] = asset_slot(project, asset_type, asset_id)
+    return result
+
 def canonical_furthest_id(furthest_id, seen_ids, narrative_index):
     """Finds the furthest still-valid stable ID using current canonical order."""
     candidates = set(seen_ids)
@@ -286,6 +324,14 @@ def validate(project, root):
                     errors.append("invalid presentation composition: " + str(segment_id))
                 elif composition_id is not None and segment_id not in project["art_requirement_by_id"][composition_id].get("presentation_segments", []):
                     errors.append("presentation composition lacks coverage: " + str(segment_id))
+                elif composition_id is not None:
+                    category = project["art_requirement_by_id"][composition_id]["category"]
+                    asset_type = ART_CATEGORY_ASSET_TYPES[category]
+                    if composition_id not in project["assets"].get(asset_type, {}):
+                        errors.append("missing production asset slot: " + composition_id)
+                hero_cg_id = direction.get("hero_cg_id")
+                if hero_cg_id is not None and hero_cg_id not in project["assets"].get("hero_cg", {}):
+                    errors.append("invalid presentation hero CG: " + str(segment_id))
                 for kind in ("background", "music", "ambience"):
                     ref = direction.get(kind)
                     if ref is not None and ref not in project["assets"].get(kind, {}):
@@ -401,9 +447,26 @@ def validate(project, root):
         if refs.count(key) != 1:
             errors.append("unreachable/repeated narrative: " + key)
     for kind, assets in project["assets"].items():
-        for path in assets.values():
-            if not (Path(root) / path).is_file():
-                errors.append("missing asset: " + path)
+        for asset_id, entry in assets.items():
+            if isinstance(entry, str):
+                if not (Path(root) / entry).is_file():
+                    errors.append("missing asset: " + entry)
+                continue
+            if kind not in ART_CATEGORY_ASSET_TYPES.values() or not isinstance(entry, dict):
+                errors.append("invalid production asset slot: " + kind + ":" + str(asset_id))
+                continue
+            status = entry.get("status")
+            path = entry.get("path")
+            if status not in PRODUCTION_ASSET_STATUSES or not isinstance(path, str) or not path:
+                errors.append("invalid production asset slot: " + kind + ":" + str(asset_id))
+                continue
+            placeholder = entry.get("development_placeholder")
+            if status == "ready" and not (Path(root) / path).is_file():
+                errors.append("missing ready production asset: " + path)
+            if status == "planned" and not isinstance(placeholder, str):
+                errors.append("missing development placeholder: " + kind + ":" + str(asset_id))
+            elif isinstance(placeholder, str) and not (Path(root) / placeholder).is_file():
+                errors.append("missing development placeholder: " + kind + ":" + str(asset_id))
     art_requirement_ids = set()
     art_character_ids = set()
     for plan in project["art_plans"]:
@@ -427,6 +490,10 @@ def validate(project, root):
             art_requirement_ids.add(asset_id)
             if requirement.get("category") not in ART_CATEGORIES:
                 errors.append("invalid art requirement category: " + str(asset_id))
+            else:
+                asset_type = ART_CATEGORY_ASSET_TYPES[requirement["category"]]
+                if asset_id not in project["assets"].get(asset_type, {}):
+                    errors.append("missing art production slot: " + str(asset_id))
             if requirement.get("reuse_class") not in REUSE_CLASSES:
                 errors.append("invalid art reuse class: " + str(asset_id))
             if not requirement.get("static"):

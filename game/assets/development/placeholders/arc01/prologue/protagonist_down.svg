@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#21111c" fill-opacity="0.72"/>
+  <ellipse cx="920" cy="620" rx="520" ry="190" fill="#752638" fill-opacity="0.36"/>
+  <path d="M620 540 C790 380 1120 420 1290 620 C1150 760 820 790 620 540Z" fill="#c49b7a" fill-opacity="0.22"/>
+  <text x="960" y="160" text-anchor="middle" fill="#f0d8ad" font-family="sans-serif" font-size="28">DEVELOPMENT COMPOSITION · PROTAGONIST DOWN</text>
+</svg>

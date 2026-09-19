@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#0c0b12" fill-opacity="0.86"/>
+  <ellipse cx="940" cy="760" rx="430" ry="170" fill="#6f1b2a" fill-opacity="0.4"/>
+  <path d="M870 310 L1100 310 L1170 820 L790 820 Z" fill="#08080d" stroke="#a35e61" stroke-width="8"/>
+  <text x="960" y="160" text-anchor="middle" fill="#e7c9cb" font-family="sans-serif" font-size="28">DEVELOPMENT COMPOSITION · LIMITED THREAT DETAIL</text>
+</svg>

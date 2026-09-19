@@ -1,7 +1,41 @@
 {
   "background": {
     "observatory": "assets/backgrounds/observatory.png",
-    "prologue_ground_placeholder": "assets/backgrounds/prologue_ground_placeholder.svg"
+    "prologue_ground_placeholder": "assets/backgrounds/prologue_ground_placeholder.svg",
+    "bg.arc01.prologue.unknown_ground": {
+      "status": "planned",
+      "path": "assets/backgrounds/arc01/prologue/unknown_ground.webp",
+      "development_placeholder": "assets/backgrounds/prologue_ground_placeholder.svg"
+    }
+  },
+  "composition": {
+    "comp.arc01.prologue.protagonist_down": {
+      "status": "planned",
+      "path": "assets/compositions/arc01/prologue/protagonist_down.webp",
+      "development_placeholder": "assets/development/placeholders/arc01/prologue/protagonist_down.svg"
+    },
+    "comp.arc01.prologue.black_boot": {
+      "status": "planned",
+      "path": "assets/compositions/arc01/prologue/black_boot.webp",
+      "development_placeholder": "assets/development/placeholders/arc01/prologue/black_boot.svg"
+    },
+    "comp.arc01.prologue.second_arrival": {
+      "status": "planned",
+      "path": "assets/compositions/arc01/prologue/second_arrival.webp",
+      "development_placeholder": "assets/development/placeholders/arc01/prologue/second_arrival.svg"
+    },
+    "comp.arc01.prologue.hand_contact": {
+      "status": "planned",
+      "path": "assets/compositions/arc01/prologue/hand_contact.webp",
+      "development_placeholder": "assets/development/placeholders/arc01/prologue/hand_contact.svg"
+    }
+  },
+  "hero_cg": {
+    "cg.arc01.prologue.final_moment": {
+      "status": "planned",
+      "path": "assets/cg/arc01/prologue/final_moment.webp",
+      "development_placeholder": "assets/development/placeholders/arc01/prologue/final_moment.svg"
+    }
   },
   "music": {
     "quiet": "audio/music/quiet.wav"

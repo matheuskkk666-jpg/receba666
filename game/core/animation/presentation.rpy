@@ -49,10 +49,24 @@ transform scene_motion_close:
     ease 24.0 zoom 1.08
     repeat
 
-screen scene_art():
-    zorder 10
-    $ art = project_data["assets"]["background"][director_state.get("background", "observatory")]
-    $ shot = director_state.get("shot", "wide")
+init python:
+    def visual_asset_path(slot):
+        """Use a final asset when present, otherwise its explicit dev placeholder."""
+        if renpy.loadable(slot["path"]):
+            return slot["path"]
+        placeholder = slot.get("development_placeholder")
+        if placeholder and renpy.loadable(placeholder):
+            return placeholder
+        raise Exception("No renderable asset for " + slot["asset_type"] + ":" + slot["id"])
+
+    def scene_visual_assets(state):
+        slots = resolve_scene_visual_slots(project_data, state)
+        return {
+            "background": visual_asset_path(slots["background"]),
+            "foreground": visual_asset_path(slots["foreground"]) if slots["foreground"] else None,
+        }
+
+screen scene_visual(art, shot):
     if persistent.presentation == "cinematic" and director_state.get("animation", "subtle") != "none":
         if shot == "low":
             add art at scene_motion_low
@@ -71,4 +85,12 @@ screen scene_art():
             add art at scene_static_close
         else:
             add art at scene_static_wide
+
+screen scene_art():
+    zorder 10
+    $ assets = scene_visual_assets(director_state)
+    $ shot = director_state.get("shot", "wide")
+    use scene_visual(assets["background"], shot)
+    if assets["foreground"]:
+        use scene_visual(assets["foreground"], shot)
     add Solid(director_state.get("lighting", "#00000000"))

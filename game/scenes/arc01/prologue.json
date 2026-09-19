@@ -2,7 +2,7 @@
   {
     "id": "arc01.prologue.sc001",
     "defaults": {
-      "background": "prologue_ground_placeholder",
+      "background": "bg.arc01.prologue.unknown_ground",
       "music": null,
       "ambience": null,
       "lighting": "#18070cb8",
