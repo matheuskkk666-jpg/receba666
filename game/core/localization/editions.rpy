@@ -1,5 +1,5 @@
 init -80 python:
-    from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, memory_unlocks, resolve, unlocked_chapters
+    from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, memory_unlocks, presentation_for, presentation_segment, resolve, resolve_presentation_direction, resolve_presentation_text, unlocked_chapters
     def read_data(path):
         with renpy.open_file(path) as stream:
             return stream.read().decode("utf-8")
@@ -11,6 +11,12 @@ init -80 python:
         return project_data["ui"][persistent.edition or "pt_BR"][key]
     def localized_entry():
         return edition_index[persistent.edition or "pt_BR"][current_id]
+    def current_presentation():
+        return presentation_segment(project_data, current_id, current_presentation_id)
+    def presentation_text():
+        return resolve_presentation_text(project_data, current_id, current_presentation_id, persistent.edition or "pt_BR", display=True)
+    def presentation_speaker():
+        return current_presentation().get("speaker") or ""
     def chapter_metadata(chapter_id):
         return chapter_edition_index[persistent.edition or "pt_BR"][chapter_id]
     def chapter_display_title(chapter_id):
@@ -31,11 +37,12 @@ init -80 python:
 
     def bind_history_id(entry):
         entry.narrative_id = current_id
+        entry.presentation_id = current_presentation_id
     config.history_callbacks.append(bind_history_id)
 
     def history_entry(entry):
         key = getattr(entry, "narrative_id", None)
-        return edition_index[persistent.edition].get(key, {"speaker": entry.who or "", "text": entry.what})
+        return {"speaker": entry.who or "", "text": entry.what}
 
 default persistent.edition = "pt_BR"
 default persistent.presentation = "cinematic"

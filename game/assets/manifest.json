@@ -1,6 +1,7 @@
 {
   "background": {
-    "observatory": "assets/backgrounds/observatory.png"
+    "observatory": "assets/backgrounds/observatory.png",
+    "prologue_ground_placeholder": "assets/backgrounds/prologue_ground_placeholder.svg"
   },
   "music": {
     "quiet": "audio/music/quiet.wav"

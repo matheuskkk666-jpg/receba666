@@ -1,1 +1,1 @@
-"""Offline-compatible scene model. No presentation or Ren'Py dependencies."""
+"""Offline-compatible content, presentation, and scene model."""

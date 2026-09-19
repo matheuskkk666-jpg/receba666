@@ -6,5 +6,45 @@
   "relief": {
     "lighting": "#00000000",
     "music_gain": 0.25
+  },
+  "injury_awareness": {
+    "lighting": "#27070fb8",
+    "shot": "low",
+    "animation": "subtle"
+  },
+  "bodily_realization": {
+    "lighting": "#33060fbd",
+    "shot": "detail",
+    "animation": "subtle"
+  },
+  "fading_consciousness": {
+    "lighting": "#150916d1",
+    "shot": "close",
+    "animation": "subtle"
+  },
+  "ominous_presence": {
+    "lighting": "#09070fbd",
+    "shot": "detail",
+    "animation": "subtle"
+  },
+  "protective_focus": {
+    "lighting": "#140b1bbd",
+    "shot": "low",
+    "animation": "subtle"
+  },
+  "fragile_connection": {
+    "lighting": "#1b0b19a8",
+    "shot": "close",
+    "animation": "subtle"
+  },
+  "final_resolve": {
+    "lighting": "#240914c2",
+    "shot": "close",
+    "animation": "subtle"
+  },
+  "death_blackout": {
+    "lighting": "#000000ff",
+    "shot": "close",
+    "animation": "none"
   }
 }

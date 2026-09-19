@@ -6,7 +6,7 @@ import unittest
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "game/python-packages"))
-from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, memory_unlocks, resolve, unlocked_chapters, validate, merge
+from foundation.model import advance_progress, canonical_furthest_id, chapter_for_narrative, load_project, memory_unlocks, presentation_for, resolve, resolve_presentation_direction, unlocked_chapters, validate, merge
 
 class FoundationTests(unittest.TestCase):
     def setUp(self):
@@ -76,16 +76,16 @@ class FoundationTests(unittest.TestCase):
                 self.assertEqual(resolved_ids, {e["id"] for e in self.project["editions"][lang]})
 
     def test_chapter_order_and_unlocks_use_canonical_data(self):
-        first, second = self.project["chapter_order"]
+        first, second = self.project["chapter_order"][1:]
         self.assertEqual(chapter_for_narrative(self.project, "test.ch02.rooftop.0001"), second)
         self.assertEqual(unlocked_chapters(self.project, -1), set())
         self.assertEqual(
             unlocked_chapters(self.project, self.project["narrative_index"]["test.ch01.observatory.0006"]),
-            {first},
+            {"arc01.prologue", first},
         )
         self.assertEqual(
             unlocked_chapters(self.project, self.project["narrative_index"]["test.ch02.rooftop.0001"]),
-            {first, second},
+            {"arc01.prologue", first, second},
         )
 
     def test_loaded_indexes_reconstruct_each_narrative_position(self):
@@ -99,8 +99,83 @@ class FoundationTests(unittest.TestCase):
         for scene_id, frames in self.project["frames_by_scene"].items():
             self.assertEqual(frames, resolve(self.project, scene_id))
 
+    def test_real_prologue_uses_final_scene_and_technical_asset_only(self):
+        scene_id = "arc01.prologue.sc001"
+        self.assertEqual(self.project["chapter_by_id"]["arc01.prologue"]["scenes"], [scene_id])
+        self.assertEqual(
+            {self.project["narrative_to_scene"][f"arc01.prologue.{number:04d}"] for number in range(1, 7)},
+            {scene_id},
+        )
+        scene = self.project["scene_by_id"][scene_id]
+        self.assertEqual(scene["defaults"]["background"], "prologue_ground_placeholder")
+        self.assertNotIn("observatory", str(scene).lower())
+        self.assertNotIn("test.", str(scene).lower())
+
+    def test_every_real_presentation_resolves_complete_direction(self):
+        expected_ids = {
+            segment["id"]
+            for number in range(1, 7)
+            for segment in presentation_for(self.project, f"arc01.prologue.{number:04d}")
+        }
+        resolved_ids = set()
+        for mode in ("static", "cinematic"):
+            for number in range(1, 7):
+                narrative_id = f"arc01.prologue.{number:04d}"
+                for segment in presentation_for(self.project, narrative_id):
+                    state = resolve_presentation_direction(self.project, narrative_id, segment["id"])
+                    resolved_ids.add(segment["id"])
+                    self.assertEqual(state["background"], "prologue_ground_placeholder", mode)
+                    self.assertIn(state["composition_id"], self.project["art_requirement_by_id"], mode)
+                    self.assertIn(state["shot"], {"low", "detail", "close"}, mode)
+                    self.assertIn(state["animation"], {"none", "subtle"}, mode)
+        self.assertEqual(resolved_ids, expected_ids)
+        self.assertEqual(len(resolved_ids), 25)
+
+    def test_art_plan_is_complete_and_spoiler_aware(self):
+        plan = self.project["art_plans"][0]
+        self.assertEqual(plan["scenes"], ["arc01.prologue.sc001"])
+        self.assertEqual(plan["location"]["player_facing"], {"pt_BR": "—", "en": "—"})
+        self.assertEqual(plan["production_inventory"]["backgrounds"], 1)
+        self.assertEqual(plan["production_inventory"]["hero_cg_candidates"], 1)
+        protagonist = self.project["art_character_by_id"]["character.natsuki_subaru"]
+        self.assertEqual(protagonist["disclosure_threshold"], "arc01.prologue.0006.p004")
+        self.assertEqual(self.errors(), [])
+
+    def test_art_plan_validation_rejects_broken_references(self):
+        requirement = self.project["art_plans"][0]["requirements"][0]
+        requirement["scenes"] = ["missing.scene"]
+        requirement["presentation_segments"] = ["missing.presentation"]
+        requirement["category"] = "Poster"
+        requirement["reuse_class"] = "Z"
+        requirement["static"] = ""
+        requirement["cinematic"] = ""
+        requirement["reuse_of"] = "missing.asset"
+        requirement["hero_candidate"] = True
+        requirement["generation_spec"] = {}
+        errors = self.errors()
+        self.assertTrue(any("invalid art requirement scene" in error for error in errors))
+        self.assertTrue(any("invalid art presentation reference" in error for error in errors))
+        self.assertTrue(any("invalid art requirement category" in error for error in errors))
+        self.assertTrue(any("invalid art reuse class" in error for error in errors))
+        self.assertTrue(any("missing Static art plan" in error for error in errors))
+        self.assertTrue(any("missing Cinematic art plan" in error for error in errors))
+        self.assertTrue(any("invalid art reuse reference" in error for error in errors))
+        self.assertTrue(any("invalid Hero CG reference" in error for error in errors))
+        self.assertTrue(any("incomplete generation spec" in error for error in errors))
+
+    def test_presentation_composition_must_cover_the_segment(self):
+        segment = self.project["presentation_by_narrative"]["arc01.prologue.0001"][0]
+        segment["direction"]["composition_id"] = "comp.arc01.prologue.black_boot"
+        self.assertTrue(any("presentation composition lacks coverage" in error for error in self.errors()))
+
+    def test_prologue_memory_unlocks_only_after_ending(self):
+        memory = self.project["memory_by_id"]["memory.scene.arc01_prologue"]
+        self.assertFalse(memory_unlocks(memory["unlock"], set(), set(), set()))
+        self.assertFalse(memory_unlocks(memory["unlock"], {"arc01.prologue.0005"}, set(), {"arc01.prologue"}))
+        self.assertTrue(memory_unlocks(memory["unlock"], {"arc01.prologue.0006"}, set(), {"arc01.prologue"}))
+
     def test_chapter_titles_are_independent_editions(self):
-        chapter_id = self.project["chapter_order"][1]
+        chapter_id = "test.arc01.ch02"
         self.assertEqual(self.project["chapter_editions"]["pt_BR"][chapter_id]["title"], "Depois da Janela")
         self.assertEqual(self.project["chapter_editions"]["en"][chapter_id]["title"], "Beyond the Window")
 

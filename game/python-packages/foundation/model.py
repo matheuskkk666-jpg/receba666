@@ -3,6 +3,9 @@ import json
 from pathlib import Path
 
 LANGUAGES = ("pt_BR", "en")
+PRESENTATION_KINDS = ("narration", "dialogue", "thought")
+ART_CATEGORIES = ("Background", "Character/environment composition", "Hero CG")
+REUSE_CLASSES = ("A", "B", "C", "D")
 
 def load_project(root, read=None):
     root = Path(root)
@@ -27,6 +30,19 @@ def load_project(root, read=None):
     chapter_order = manifest["chapter_order"]
     memory_manifest = manifest.get("memories")
     memories = get(memory_manifest["entries"]) if memory_manifest else []
+    presentation_manifest = manifest.get("presentation", {})
+    presentation_documents = [get(path) for path in presentation_manifest.get("fragments", [])]
+    art_plans = [get(path) for path in manifest.get("art_plans", [])]
+    presentation_groups = [
+        {"parent_id": narrative_id, "segments": segments}
+        for document in presentation_documents
+        for narrative_id, segments in document.get("narrative", {}).items()
+    ]
+    presentation_source_narrative = combine(presentation_manifest.get("narrative_sources", []))
+    presentation_source_editions = {
+        lang: combine(presentation_manifest.get("translation_sources", {}).get(lang, []))
+        for lang in LANGUAGES
+    }
     project = {
         "manifest_version": manifest["version"],
         "narrative": narrative,
@@ -46,6 +62,39 @@ def load_project(root, read=None):
         "memories": memories,
         "memory_by_id": {entry["id"]: entry for entry in memories},
         "memory_editions": {lang: get(memory_manifest["translations"][lang]) if memory_manifest else {} for lang in LANGUAGES},
+        "presentation_groups": presentation_groups,
+        "presentation_required_ids": presentation_manifest.get("required_narrative_ids", []),
+        "presentation_speakers": set(presentation_manifest.get("speakers", [])),
+        "art_plans": art_plans,
+    }
+    project["presentation_parent_by_id"] = {
+        entry["id"]: entry for entry in narrative + presentation_source_narrative
+    }
+    project["presentation_editions"] = {}
+    project["presentation_translation_by_language"] = {}
+    for lang in LANGUAGES:
+        rows = project["editions"][lang] + presentation_source_editions[lang]
+        project["presentation_editions"][lang] = rows
+        project["presentation_translation_by_language"][lang] = {
+            entry["id"]: entry for entry in rows
+        }
+    project["presentation_by_narrative"] = {
+        group["parent_id"]: group["segments"] for group in presentation_groups
+    }
+    project["presentation_segment_by_id"] = {
+        segment["id"]: segment
+        for group in presentation_groups
+        for segment in group["segments"]
+    }
+    project["art_requirement_by_id"] = {
+        requirement["asset_id"]: requirement
+        for plan in art_plans
+        for requirement in plan.get("requirements", [])
+    }
+    project["art_character_by_id"] = {
+        character["id"]: character
+        for plan in art_plans
+        for character in plan.get("characters", [])
     }
     project["scene_by_id"] = {scene["id"]: scene for scene in scenes}
     project["narrative_to_scene"] = {entry["id"]: entry["scene"] for entry in narrative}
@@ -64,6 +113,58 @@ def load_project(root, read=None):
         for index, frame in enumerate(frames)
     }
     return project
+
+def presentation_for(project, narrative_id):
+    """Returns explicit segments or a transient whole-row compatibility segment."""
+    explicit = project["presentation_by_narrative"].get(narrative_id)
+    if explicit is not None:
+        return explicit
+    parent = project["presentation_parent_by_id"].get(narrative_id)
+    if parent is None:
+        raise KeyError(narrative_id)
+    ranges = {}
+    for lang in LANGUAGES:
+        row = project["presentation_translation_by_language"][lang].get(narrative_id)
+        if row is None:
+            raise KeyError(narrative_id + ":" + lang)
+        ranges[lang] = {"start": 0, "end": len(row["text"])}
+    return [{
+        "id": narrative_id + ".p000",
+        "kind": parent.get("kind", "narration"),
+        "speaker": None,
+        "ranges": ranges,
+        "synthetic": True,
+    }]
+
+def presentation_segment(project, narrative_id, segment_id):
+    for index, segment in enumerate(presentation_for(project, narrative_id)):
+        if segment["id"] == segment_id:
+            result = copy.deepcopy(segment)
+            result["parent_id"] = narrative_id
+            result["ordinal"] = index
+            return result
+    raise KeyError(segment_id)
+
+def resolve_presentation_text(project, narrative_id, segment_id, language, display=False):
+    if language not in LANGUAGES:
+        raise KeyError(language)
+    segment = presentation_segment(project, narrative_id, segment_id)
+    bounds = segment["ranges"][language]
+    row = project["presentation_translation_by_language"][language][narrative_id]
+    text = row["text"][bounds["start"]:bounds["end"]]
+    return text.strip() if display else text
+
+def resolve_presentation_direction(project, narrative_id, segment_id):
+    """Resolve scene → canonical frame → beat → presentation override."""
+    scene_id = project["narrative_to_scene"][narrative_id]
+    frame_index = project["frame_index_by_narrative"][narrative_id]
+    state = copy.deepcopy(project["frames_by_scene"][scene_id][frame_index]["state"])
+    segment = presentation_segment(project, narrative_id, segment_id)
+    beat = segment.get("beat")
+    if beat:
+        state = merge(state, project["beats"][beat])
+    state = merge(state, segment.get("direction", {}))
+    return state
 
 def canonical_furthest_id(furthest_id, seen_ids, narrative_index):
     """Finds the furthest still-valid stable ID using current canonical order."""
@@ -151,6 +252,74 @@ def validate(project, root):
     scenes = check_unique(project["scenes"], "scene ID")
     chapters = check_unique(project["chapters"], "chapter ID")
     memory_ids = check_unique(project["memories"], "memory ID")
+    presentation_parents = set(project["presentation_parent_by_id"])
+    presentation_parent_ids = check_unique(
+        [{"id": group["parent_id"]} for group in project["presentation_groups"]],
+        "presentation parent ID",
+    )
+    segment_ids = set()
+    for group in project["presentation_groups"]:
+        parent_id = group["parent_id"]
+        if parent_id not in presentation_parents:
+            errors.append("unknown presentation parent: " + parent_id)
+            continue
+        segments = group.get("segments")
+        if not isinstance(segments, list) or not segments:
+            errors.append("missing presentation segments: " + parent_id)
+            continue
+        for segment in segments:
+            segment_id = segment.get("id")
+            if not segment_id or segment_id in segment_ids:
+                errors.append("duplicate/empty presentation segment ID: " + str(segment_id))
+            segment_ids.add(segment_id)
+            if segment.get("kind") not in PRESENTATION_KINDS:
+                errors.append("invalid presentation kind: " + str(segment_id))
+            beat = segment.get("beat")
+            if beat is not None and beat not in project["beats"]:
+                errors.append("invalid presentation beat: " + str(segment_id))
+            direction = segment.get("direction", {})
+            if not isinstance(direction, dict):
+                errors.append("invalid presentation direction: " + str(segment_id))
+            else:
+                composition_id = direction.get("composition_id")
+                if composition_id is not None and composition_id not in project["art_requirement_by_id"]:
+                    errors.append("invalid presentation composition: " + str(segment_id))
+                elif composition_id is not None and segment_id not in project["art_requirement_by_id"][composition_id].get("presentation_segments", []):
+                    errors.append("presentation composition lacks coverage: " + str(segment_id))
+                for kind in ("background", "music", "ambience"):
+                    ref = direction.get(kind)
+                    if ref is not None and ref not in project["assets"].get(kind, {}):
+                        errors.append("invalid presentation " + kind + ": " + str(segment_id))
+            speaker = segment.get("speaker")
+            if speaker is not None and speaker not in project["presentation_speakers"]:
+                errors.append("invalid presentation speaker: " + str(segment_id))
+        for lang in LANGUAGES:
+            row = project["presentation_translation_by_language"][lang].get(parent_id)
+            if row is None:
+                errors.append("missing " + lang + " presentation translation: " + parent_id)
+                continue
+            cursor = 0
+            text_length = len(row.get("text", ""))
+            for segment in segments:
+                segment_id = str(segment.get("id"))
+                bounds = segment.get("ranges", {}).get(lang)
+                if not isinstance(bounds, dict):
+                    errors.append("missing " + lang + " presentation range: " + segment_id)
+                    continue
+                start, end = bounds.get("start"), bounds.get("end")
+                if not isinstance(start, int) or not isinstance(end, int) or start < 0 or end <= start or end > text_length:
+                    errors.append("invalid " + lang + " presentation range: " + segment_id)
+                    continue
+                if start < cursor:
+                    errors.append("overlapping " + lang + " presentation range: " + segment_id)
+                elif start > cursor:
+                    errors.append("gap in " + lang + " presentation before: " + segment_id)
+                cursor = max(cursor, end)
+            if cursor != text_length:
+                errors.append("incomplete " + lang + " presentation coverage: " + parent_id)
+    for parent_id in project["presentation_required_ids"]:
+        if parent_id not in presentation_parent_ids:
+            errors.append("missing explicit presentation: " + parent_id)
     order = project["narrative_order"]
     order_ids = check_unique([{"id": narrative_id} for narrative_id in order], "narrative order ID")
     for key in sorted(ids - order_ids):
@@ -235,6 +404,66 @@ def validate(project, root):
         for path in assets.values():
             if not (Path(root) / path).is_file():
                 errors.append("missing asset: " + path)
+    art_requirement_ids = set()
+    art_character_ids = set()
+    for plan in project["art_plans"]:
+        plan_id = str(plan.get("id", ""))
+        plan_scenes = plan.get("scenes", [])
+        for scene_id in plan_scenes:
+            if scene_id not in scenes:
+                errors.append("invalid art plan scene: " + plan_id)
+        for character in plan.get("characters", []):
+            character_id = character.get("id")
+            if not character_id or character_id in art_character_ids:
+                errors.append("duplicate/empty art character ID: " + str(character_id))
+            art_character_ids.add(character_id)
+            threshold = character.get("disclosure_threshold")
+            if threshold is not None and threshold not in segment_ids:
+                errors.append("invalid art character disclosure: " + str(character_id))
+        for requirement in plan.get("requirements", []):
+            asset_id = requirement.get("asset_id")
+            if not asset_id or asset_id in art_requirement_ids:
+                errors.append("duplicate/empty art requirement ID: " + str(asset_id))
+            art_requirement_ids.add(asset_id)
+            if requirement.get("category") not in ART_CATEGORIES:
+                errors.append("invalid art requirement category: " + str(asset_id))
+            if requirement.get("reuse_class") not in REUSE_CLASSES:
+                errors.append("invalid art reuse class: " + str(asset_id))
+            if not requirement.get("static"):
+                errors.append("missing Static art plan: " + str(asset_id))
+            if not requirement.get("cinematic"):
+                errors.append("missing Cinematic art plan: " + str(asset_id))
+            generation = requirement.get("generation_spec", {})
+            if any(not generation.get(field) for field in ("canvas", "safe_ui", "depth_layers", "continuity", "do_not_show")):
+                errors.append("incomplete generation spec: " + str(asset_id))
+            for scene_id in requirement.get("scenes", []):
+                if scene_id not in scenes:
+                    errors.append("invalid art requirement scene: " + str(asset_id))
+            for presentation_id in requirement.get("presentation_segments", []):
+                if presentation_id not in segment_ids:
+                    errors.append("invalid art presentation reference: " + str(asset_id))
+            for character_id in requirement.get("characters", []):
+                if character_id not in project["art_character_by_id"]:
+                    errors.append("invalid art character reference: " + str(asset_id))
+            reuse_of = requirement.get("reuse_of")
+            if reuse_of is not None and reuse_of not in project["art_requirement_by_id"]:
+                errors.append("invalid art reuse reference: " + str(asset_id))
+            hero_candidate = requirement.get("hero_candidate", False)
+            if bool(hero_candidate) != (requirement.get("category") == "Hero CG"):
+                errors.append("invalid Hero CG reference: " + str(asset_id))
+        covered = {
+            presentation_id
+            for requirement in plan.get("requirements", [])
+            for presentation_id in requirement.get("presentation_segments", [])
+        }
+        expected = {
+            segment["id"]
+            for scene_id in plan_scenes
+            for frame in project["frames_by_scene"].get(scene_id, [])
+            for segment in presentation_for(project, frame["id"])
+        }
+        for presentation_id in sorted(expected - covered):
+            errors.append("presentation missing art coverage: " + presentation_id)
     allowed_categories = {"illustrations", "characters", "scenes", "death_memories"}
     fact_ids = set()
     for memory in project["memories"]:

@@ -23,6 +23,12 @@ def fingerprint(texts):
 
 def load_blocks(path): return read_json(path)["blocks"]
 
+def joined_source_text(source, source_ids):
+    text = source[source_ids[0]]["text"]
+    for source_id in source_ids[1:]:
+        text += source[source_id].get("join_prefix", "\n\n") + source[source_id]["text"]
+    return text
+
 
 def index_blocks(blocks):
     index, errors = {}, []
@@ -154,7 +160,7 @@ def import_content(args):
     for unit, narrative_id, fingerprints in rows:
         chapter = by_chapter.setdefault(unit["chapter_id"], {"narrative": [], "pt_BR": [], "en": []})
         chapter["narrative"].append({"id": narrative_id, "scene": unit.get("scene_hint", "review_required"), "kind": unit.get("kind", "narration"), "provenance": "source_exact", "status": unit.get("status", "source_exact"), "source_unit": unit["unit_id"]})
-        for language in LANGS: chapter[language].append({"id": narrative_id, "speaker": unit.get("speaker_hint", "") or "", "text": "\n\n".join(sources[language][source_id]["text"] for source_id in unit[language]), "source_blocks": unit[language], "status": unit.get("status", "source_exact")})
+        for language in LANGS: chapter[language].append({"id": narrative_id, "speaker": unit.get("speaker_hint", "") or "", "text": joined_source_text(sources[language], unit[language]), "source_blocks": unit[language], "status": unit.get("status", "source_exact")})
         ledger["units"][unit["unit_id"]] = {"narrative_id": narrative_id, "fingerprints": fingerprints, "chapter_id": unit["chapter_id"]}
     output = Path(args.output)
     for chapter_id, payload in by_chapter.items():

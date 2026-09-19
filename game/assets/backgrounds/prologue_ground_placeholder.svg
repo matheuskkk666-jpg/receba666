@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#100c16"/>
+      <stop offset="0.58" stop-color="#171019"/>
+      <stop offset="1" stop-color="#08070b"/>
+    </linearGradient>
+    <radialGradient id="pool" cx="44%" cy="70%" r="46%">
+      <stop offset="0" stop-color="#56131d" stop-opacity="0.72"/>
+      <stop offset="0.52" stop-color="#2a0a12" stop-opacity="0.52"/>
+      <stop offset="1" stop-color="#11070b" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="haze" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#611421" stop-opacity="0.18"/>
+      <stop offset="0.48" stop-color="#160d18" stop-opacity="0"/>
+      <stop offset="1" stop-color="#030308" stop-opacity="0.35"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#ground)"/>
+  <ellipse cx="820" cy="770" rx="780" ry="350" fill="url(#pool)"/>
+  <path d="M0 780 C360 700 700 760 1030 710 C1330 665 1630 725 1920 650 L1920 1080 L0 1080 Z" fill="#08070a" opacity="0.52"/>
+  <rect width="1920" height="1080" fill="url(#haze)"/>
+  <text x="64" y="1016" fill="#ad7780" opacity="0.32" font-family="sans-serif" font-size="20">TECHNICAL PROLOGUE PLACEHOLDER — NOT FINAL ART</text>
+</svg>

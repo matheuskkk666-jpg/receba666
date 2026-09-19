@@ -1,0 +1,488 @@
+{
+  "version": 1,
+  "id": "artplan.arc01.prologue",
+  "status": "ready_for_art_review",
+  "scenes": [
+    "arc01.prologue.sc001"
+  ],
+  "location": {
+    "id": "location.arc01.prologue.unknown",
+    "player_facing": {
+      "pt_BR": "—",
+      "en": "—"
+    },
+    "disclosure": "No specific location is established by the prologue."
+  },
+  "characters": [
+    {
+      "id": "character.natsuki_subaru",
+      "player_label_before_disclosure": null,
+      "disclosure_threshold": "arc01.prologue.0006.p004",
+      "base_design_required": true,
+      "outfits": [
+        "outfit.natsuki_subaru.prologue_injured"
+      ],
+      "visible_features": [
+        "injured body",
+        "hands",
+        "clothing details without player-facing name"
+      ],
+      "do_not_show_before_disclosure": [
+        "player-facing name",
+        "future knowledge"
+      ]
+    },
+    {
+      "id": "character.prologue.girl_unknown",
+      "player_label_before_disclosure": null,
+      "disclosure_threshold": null,
+      "base_design_required": true,
+      "outfits": [],
+      "visible_features": [
+        "silhouette",
+        "hand",
+        "fall/contact only as supported"
+      ],
+      "do_not_show_before_disclosure": [
+        "face identity",
+        "name",
+        "future affiliations"
+      ]
+    },
+    {
+      "id": "character.prologue.aggressor_unknown",
+      "player_label_before_disclosure": null,
+      "disclosure_threshold": null,
+      "base_design_required": false,
+      "outfits": [],
+      "visible_features": [
+        "dark footwear detail",
+        "partial silhouette only"
+      ],
+      "do_not_show_before_disclosure": [
+        "face",
+        "full outfit",
+        "weapon",
+        "gender",
+        "age",
+        "identity"
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "asset_id": "bg.arc01.prologue.unknown_ground",
+      "category": "Background",
+      "scenes": [
+        "arc01.prologue.sc001"
+      ],
+      "presentation_segments": [
+        "arc01.prologue.0001.p001",
+        "arc01.prologue.0001.p002",
+        "arc01.prologue.0001.p003",
+        "arc01.prologue.0001.p004",
+        "arc01.prologue.0002.p001",
+        "arc01.prologue.0002.p002",
+        "arc01.prologue.0002.p003",
+        "arc01.prologue.0002.p004",
+        "arc01.prologue.0002.p005",
+        "arc01.prologue.0003.p001",
+        "arc01.prologue.0003.p002",
+        "arc01.prologue.0003.p003",
+        "arc01.prologue.0003.p004",
+        "arc01.prologue.0004.p001",
+        "arc01.prologue.0004.p002",
+        "arc01.prologue.0004.p003",
+        "arc01.prologue.0004.p004",
+        "arc01.prologue.0004.p005",
+        "arc01.prologue.0005.p001",
+        "arc01.prologue.0005.p002",
+        "arc01.prologue.0005.p003",
+        "arc01.prologue.0006.p001",
+        "arc01.prologue.0006.p002",
+        "arc01.prologue.0006.p003",
+        "arc01.prologue.0006.p004"
+      ],
+      "narrative_range": [
+        "arc01.prologue.0001.p001",
+        "arc01.prologue.0006.p004"
+      ],
+      "purpose": "Reusable ambiguous ground and atmosphere beneath every composition.",
+      "location": "location.arc01.prologue.unknown",
+      "characters": [],
+      "environment": "Unidentified dark ground; preserve ambiguity and low viewpoint.",
+      "camera": "ground-level neutral base",
+      "framing": "wide background plate with open lower-center UI zone",
+      "lighting": "low red-dark directional spill from frame left",
+      "pose": null,
+      "expression": null,
+      "props": [
+        "prop.arc01.prologue.blood_pool"
+      ],
+      "fx": [
+        "fx.arc01.prologue.fading_focus"
+      ],
+      "static": "Stable abstract ground plate.",
+      "cinematic": "Very slow global push and restrained foreground drift.",
+      "reuse_class": "A",
+      "reuse_of": null,
+      "hero_candidate": false,
+      "spoiler_notes": "No architecture or landmark may identify the place.",
+      "generation_spec": {
+        "canvas": "1920x1080, 16:9",
+        "safe_ui": [
+          "lower dialogue area must not cover focal evidence",
+          "top-left metadata clear",
+          "upper-right hide control clear"
+        ],
+        "depth_layers": [
+          "foreground haze",
+          "subject plane",
+          "abstract ground"
+        ],
+        "continuity": "Maintain the same unidentified place, blood placement, low camera axis, and light direction.",
+        "do_not_show": [
+          "specific named location",
+          "official illustration recreation",
+          "anime frame styling"
+        ]
+      }
+    },
+    {
+      "asset_id": "comp.arc01.prologue.protagonist_down",
+      "category": "Character/environment composition",
+      "scenes": [
+        "arc01.prologue.sc001"
+      ],
+      "presentation_segments": [
+        "arc01.prologue.0001.p001",
+        "arc01.prologue.0001.p002",
+        "arc01.prologue.0001.p003",
+        "arc01.prologue.0001.p004",
+        "arc01.prologue.0002.p001",
+        "arc01.prologue.0002.p002",
+        "arc01.prologue.0002.p003",
+        "arc01.prologue.0002.p004",
+        "arc01.prologue.0002.p005",
+        "arc01.prologue.0003.p001",
+        "arc01.prologue.0003.p002",
+        "arc01.prologue.0004.p001",
+        "arc01.prologue.0004.p002"
+      ],
+      "narrative_range": [
+        "arc01.prologue.0001.p001",
+        "arc01.prologue.0004.p002"
+      ],
+      "purpose": "Primary low-angle continuity composition for injury, realization, fading, and protective focus.",
+      "location": "location.arc01.prologue.unknown",
+      "characters": [
+        "character.natsuki_subaru"
+      ],
+      "environment": "Unidentified dark ground; preserve ambiguity and low viewpoint.",
+      "camera": "near-ground, partial near-POV axis",
+      "framing": "partial injured body, hands and clothing detail; face/name disclosure withheld",
+      "lighting": "dark red edge light, subject readable without glamour",
+      "pose": "prone injured; minimal reaching variation",
+      "expression": "pain/fading or fragile focus only when face is permitted",
+      "props": [
+        "prop.arc01.prologue.blood_pool"
+      ],
+      "fx": [
+        "fx.arc01.prologue.fading_focus"
+      ],
+      "static": "Use stable low composition; crop/detail shifts carry beats.",
+      "cinematic": "Slow push or tiny focus shift; never shake continuously.",
+      "reuse_class": "C",
+      "reuse_of": null,
+      "hero_candidate": false,
+      "spoiler_notes": "Do not label or visually announce the protagonist before the final textual reveal.",
+      "generation_spec": {
+        "canvas": "1920x1080, 16:9",
+        "safe_ui": [
+          "lower dialogue area must not cover focal evidence",
+          "top-left metadata clear",
+          "upper-right hide control clear"
+        ],
+        "depth_layers": [
+          "foreground haze",
+          "subject plane",
+          "abstract ground"
+        ],
+        "continuity": "Maintain the same unidentified place, blood placement, low camera axis, and light direction.",
+        "do_not_show": [
+          "specific named location",
+          "official illustration recreation",
+          "anime frame styling"
+        ]
+      }
+    },
+    {
+      "asset_id": "comp.arc01.prologue.black_boot",
+      "category": "Character/environment composition",
+      "scenes": [
+        "arc01.prologue.sc001"
+      ],
+      "presentation_segments": [
+        "arc01.prologue.0003.p003",
+        "arc01.prologue.0003.p004"
+      ],
+      "narrative_range": [
+        "arc01.prologue.0003.p003",
+        "arc01.prologue.0003.p004"
+      ],
+      "purpose": "Introduce the threatening presence using only the explicitly supported footwear detail.",
+      "location": "location.arc01.prologue.unknown",
+      "characters": [
+        "character.prologue.aggressor_unknown"
+      ],
+      "environment": "Unidentified dark ground; preserve ambiguity and low viewpoint.",
+      "camera": "ground-level detail",
+      "framing": "dark footwear entering blood ripple; no upper-body identity",
+      "lighting": "near-black silhouette with restrained red reflection",
+      "pose": "standing detail only",
+      "expression": null,
+      "props": [
+        "prop.arc01.prologue.blood_pool",
+        "prop.arc01.prologue.dark_footwear"
+      ],
+      "fx": [
+        "fx.arc01.prologue.blood_ripple"
+      ],
+      "static": "Hold the footwear detail and obscured silhouette.",
+      "cinematic": "Tiny downward reveal or ripple movement; no dramatic shake.",
+      "reuse_class": "C",
+      "reuse_of": null,
+      "hero_candidate": false,
+      "spoiler_notes": "Never reveal face, body design, weapon, gender, age, or identity.",
+      "generation_spec": {
+        "canvas": "1920x1080, 16:9",
+        "safe_ui": [
+          "lower dialogue area must not cover focal evidence",
+          "top-left metadata clear",
+          "upper-right hide control clear"
+        ],
+        "depth_layers": [
+          "foreground haze",
+          "subject plane",
+          "abstract ground"
+        ],
+        "continuity": "Maintain the same unidentified place, blood placement, low camera axis, and light direction.",
+        "do_not_show": [
+          "specific named location",
+          "official illustration recreation",
+          "anime frame styling"
+        ]
+      }
+    },
+    {
+      "asset_id": "comp.arc01.prologue.second_arrival",
+      "category": "Character/environment composition",
+      "scenes": [
+        "arc01.prologue.sc001"
+      ],
+      "presentation_segments": [
+        "arc01.prologue.0004.p003",
+        "arc01.prologue.0004.p004",
+        "arc01.prologue.0004.p005",
+        "arc01.prologue.0005.p001"
+      ],
+      "narrative_range": [
+        "arc01.prologue.0004.p003",
+        "arc01.prologue.0005.p001"
+      ],
+      "purpose": "Carry the distant voice and the second person falling without revealing identity.",
+      "location": "location.arc01.prologue.unknown",
+      "characters": [
+        "character.natsuki_subaru",
+        "character.prologue.girl_unknown"
+      ],
+      "environment": "Unidentified dark ground; preserve ambiguity and low viewpoint.",
+      "camera": "low lateral frame",
+      "framing": "voice presence suggested off-frame, then partial silhouette/fall beside protagonist",
+      "lighting": "soft pale edge against red-dark environment",
+      "pose": "protagonist prone; second figure falling/settling out of full view",
+      "expression": null,
+      "props": [
+        "prop.arc01.prologue.blood_pool"
+      ],
+      "fx": [
+        "fx.arc01.prologue.fading_focus"
+      ],
+      "static": "Use silhouette and spatial proximity; keep faces hidden.",
+      "cinematic": "Subtle focus transfer and short controlled fade on arrival.",
+      "reuse_class": "C",
+      "reuse_of": null,
+      "hero_candidate": false,
+      "spoiler_notes": "No name, recognizable face, hair, or future identity cues for the girl.",
+      "generation_spec": {
+        "canvas": "1920x1080, 16:9",
+        "safe_ui": [
+          "lower dialogue area must not cover focal evidence",
+          "top-left metadata clear",
+          "upper-right hide control clear"
+        ],
+        "depth_layers": [
+          "foreground haze",
+          "subject plane",
+          "abstract ground"
+        ],
+        "continuity": "Maintain the same unidentified place, blood placement, low camera axis, and light direction.",
+        "do_not_show": [
+          "specific named location",
+          "official illustration recreation",
+          "anime frame styling"
+        ]
+      }
+    },
+    {
+      "asset_id": "comp.arc01.prologue.hand_contact",
+      "category": "Character/environment composition",
+      "scenes": [
+        "arc01.prologue.sc001"
+      ],
+      "presentation_segments": [
+        "arc01.prologue.0005.p002",
+        "arc01.prologue.0005.p003",
+        "arc01.prologue.0006.p001",
+        "arc01.prologue.0006.p002",
+        "arc01.prologue.0006.p003"
+      ],
+      "narrative_range": [
+        "arc01.prologue.0005.p002",
+        "arc01.prologue.0006.p003"
+      ],
+      "purpose": "Sustain the physical contact and final resolve with a reusable hand-focused composition.",
+      "location": "location.arc01.prologue.unknown",
+      "characters": [
+        "character.natsuki_subaru",
+        "character.prologue.girl_unknown"
+      ],
+      "environment": "Unidentified dark ground; preserve ambiguity and low viewpoint.",
+      "camera": "close ground-level detail",
+      "framing": "hands/contact as focal subject; bodies remain partial",
+      "lighting": "narrow warm-red edge on hands within dark frame",
+      "pose": "reaching and hand contact",
+      "expression": "not required; resolve conveyed through gesture",
+      "props": [
+        "prop.arc01.prologue.blood_pool"
+      ],
+      "fx": [
+        "fx.arc01.prologue.fading_focus"
+      ],
+      "static": "Stable hand-contact close shot.",
+      "cinematic": "Minute push and light modulation; keep reading calm.",
+      "reuse_class": "B",
+      "reuse_of": "comp.arc01.prologue.protagonist_down",
+      "hero_candidate": false,
+      "spoiler_notes": "Do not reveal the second figure beyond what contact and silhouette establish.",
+      "generation_spec": {
+        "canvas": "1920x1080, 16:9",
+        "safe_ui": [
+          "lower dialogue area must not cover focal evidence",
+          "top-left metadata clear",
+          "upper-right hide control clear"
+        ],
+        "depth_layers": [
+          "foreground haze",
+          "subject plane",
+          "abstract ground"
+        ],
+        "continuity": "Maintain the same unidentified place, blood placement, low camera axis, and light direction.",
+        "do_not_show": [
+          "specific named location",
+          "official illustration recreation",
+          "anime frame styling"
+        ]
+      }
+    },
+    {
+      "asset_id": "cg.arc01.prologue.final_moment",
+      "category": "Hero CG",
+      "scenes": [
+        "arc01.prologue.sc001"
+      ],
+      "presentation_segments": [
+        "arc01.prologue.0006.p004"
+      ],
+      "narrative_range": [
+        "arc01.prologue.0006.p004",
+        "arc01.prologue.0006.p004"
+      ],
+      "purpose": "Optional emotional culmination for the name reveal and death; ordinary composition cannot combine disclosure, contact, and final loss of light as strongly.",
+      "location": "location.arc01.prologue.unknown",
+      "characters": [
+        "character.natsuki_subaru",
+        "character.prologue.girl_unknown"
+      ],
+      "environment": "Unidentified dark ground; preserve ambiguity and low viewpoint.",
+      "camera": "intimate low close composition",
+      "framing": "contact remains focal; protagonist may become identifiable only at textual threshold",
+      "lighting": "last red rim extinguishing into black",
+      "pose": "final stillness and contact",
+      "expression": "fragile determination fading; no melodramatic exaggeration",
+      "props": [
+        "prop.arc01.prologue.blood_pool"
+      ],
+      "fx": [
+        "fx.arc01.prologue.blackout"
+      ],
+      "static": "Hold the final moment, then cut to full black.",
+      "cinematic": "Single restrained light falloff and fade to black.",
+      "reuse_class": "D",
+      "reuse_of": null,
+      "hero_candidate": true,
+      "spoiler_notes": "Complements the narrative; no checkpoint, shadow hands, rebirth, or future identity reveal.",
+      "generation_spec": {
+        "canvas": "1920x1080, 16:9",
+        "safe_ui": [
+          "lower dialogue area must not cover focal evidence",
+          "top-left metadata clear",
+          "upper-right hide control clear"
+        ],
+        "depth_layers": [
+          "foreground haze",
+          "subject plane",
+          "abstract ground"
+        ],
+        "continuity": "Maintain the same unidentified place, blood placement, low camera axis, and light direction.",
+        "do_not_show": [
+          "specific named location",
+          "official illustration recreation",
+          "anime frame styling"
+        ]
+      }
+    }
+  ],
+  "audio_intent": {
+    "music": "Sparse, original low tension texture or silence; no anime/OST material.",
+    "ambience": "Close, indistinct ground tone without identifying a location.",
+    "sfx_events": [
+      "restrained cough/breath",
+      "short distant cry",
+      "body fall",
+      "hand contact",
+      "final fade to silence"
+    ],
+    "ending": "All sound falls away with death_blackout; no Return by Death cue."
+  },
+  "production_inventory": {
+    "locations": 1,
+    "backgrounds": 1,
+    "character_bases": 2,
+    "outfits": 1,
+    "poses": 4,
+    "expressions": 2,
+    "props": 2,
+    "fx": 3,
+    "reusable_compositions": 2,
+    "new_compositions": 3,
+    "hero_cg_candidates": 1,
+    "major_composition_segment_counts": {
+      "comp.arc01.prologue.protagonist_down": 13,
+      "comp.arc01.prologue.black_boot": 2,
+      "comp.arc01.prologue.second_arrival": 4,
+      "comp.arc01.prologue.hand_contact": 5,
+      "cg.arc01.prologue.final_moment": 1
+    }
+  }
+}

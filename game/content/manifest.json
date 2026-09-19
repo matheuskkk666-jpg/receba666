@@ -2,21 +2,31 @@
   "version": 1,
   "fragments": {
     "narrative": [
+      "generated/arc01/prologue/narrative/arc01.prologue.json",
       "narrative/placeholder/entries.json"
     ],
     "scenes": [
+      "scenes/arc01/prologue.json",
       "scenes/placeholder/scenes.json"
     ],
     "translations": {
       "pt_BR": [
+        "generated/arc01/prologue/translations/pt_BR/arc01.prologue.json",
         "translations/pt_BR/story.json"
       ],
       "en": [
+        "generated/arc01/prologue/translations/en/arc01.prologue.json",
         "translations/en/story.json"
       ]
     }
   },
   "narrative_order": [
+    "arc01.prologue.0001",
+    "arc01.prologue.0002",
+    "arc01.prologue.0003",
+    "arc01.prologue.0004",
+    "arc01.prologue.0005",
+    "arc01.prologue.0006",
     "test.ch01.observatory.0001",
     "test.ch01.observatory.0002",
     "test.ch01.observatory.0003",
@@ -29,6 +39,7 @@
   ],
   "chapters": "chapters/placeholder/chapters.json",
   "chapter_order": [
+    "arc01.prologue",
     "test.arc01.ch01",
     "test.arc01.ch02"
   ],
@@ -48,5 +59,26 @@
       "pt_BR": "translations/pt_BR/memories.json",
       "en": "translations/en/memories.json"
     }
-  }
+  },
+  "presentation": {
+    "fragments": [
+      "content/presentation/arc01/prologue.json"
+    ],
+    "narrative_sources": [],
+    "translation_sources": {
+      "pt_BR": [],
+      "en": []
+    },
+    "required_narrative_ids": [
+      "arc01.prologue.0001",
+      "arc01.prologue.0002",
+      "arc01.prologue.0003",
+      "arc01.prologue.0004",
+      "arc01.prologue.0005",
+      "arc01.prologue.0006"
+    ]
+  },
+  "art_plans": [
+    "content/art_plans/arc01/prologue.json"
+  ]
 }

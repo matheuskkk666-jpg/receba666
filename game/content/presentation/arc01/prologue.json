@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "narrative": {
+    "arc01.prologue.0001": [
+      {"id": "arc01.prologue.0001.p001", "kind": "thought", "speaker": null, "ranges": {"pt_BR": {"start": 0, "end": 27}, "en": {"start": 0, "end": 34}}, "beat": "injury_awareness", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0001.p002", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 27, "end": 321}, "en": {"start": 34, "end": 299}}, "beat": "injury_awareness", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0001.p003", "kind": "thought", "speaker": null, "ranges": {"pt_BR": {"start": 321, "end": 379}, "en": {"start": 299, "end": 370}}, "beat": "injury_awareness", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0001.p004", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 379, "end": 636}, "en": {"start": 370, "end": 522}}, "beat": "injury_awareness", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}}
+    ],
+    "arc01.prologue.0002": [
+      {"id": "arc01.prologue.0002.p001", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 0, "end": 79}, "en": {"start": 0, "end": 76}}, "beat": "bodily_realization", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0002.p002", "kind": "thought", "speaker": null, "ranges": {"pt_BR": {"start": 79, "end": 111}, "en": {"start": 76, "end": 127}}, "beat": "bodily_realization", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0002.p003", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 111, "end": 549}, "en": {"start": 127, "end": 368}}, "beat": "bodily_realization", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0002.p004", "kind": "thought", "speaker": null, "ranges": {"pt_BR": {"start": 549, "end": 582}, "en": {"start": 368, "end": 394}}, "beat": "bodily_realization", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0002.p005", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 582, "end": 678}, "en": {"start": 394, "end": 443}}, "beat": "bodily_realization", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}}
+    ],
+    "arc01.prologue.0003": [
+      {"id": "arc01.prologue.0003.p001", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 0, "end": 113}, "en": {"start": 0, "end": 140}}, "beat": "fading_consciousness", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0003.p002", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 113, "end": 639}, "en": {"start": 140, "end": 309}}, "beat": "fading_consciousness", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0003.p003", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 639, "end": 718}, "en": {"start": 309, "end": 406}}, "beat": "ominous_presence", "direction": {"composition_id": "comp.arc01.prologue.black_boot"}},
+      {"id": "arc01.prologue.0003.p004", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 718, "end": 789}, "en": {"start": 406, "end": 478}}, "beat": "ominous_presence", "direction": {"composition_id": "comp.arc01.prologue.black_boot"}}
+    ],
+    "arc01.prologue.0004": [
+      {"id": "arc01.prologue.0004.p001", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 0, "end": 263}, "en": {"start": 0, "end": 85}}, "beat": "protective_focus", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0004.p002", "kind": "thought", "speaker": null, "ranges": {"pt_BR": {"start": 263, "end": 309}, "en": {"start": 85, "end": 151}}, "beat": "protective_focus", "direction": {"composition_id": "comp.arc01.prologue.protagonist_down"}},
+      {"id": "arc01.prologue.0004.p003", "kind": "dialogue", "speaker": null, "ranges": {"pt_BR": {"start": 309, "end": 325}, "en": {"start": 151, "end": 160}}, "beat": "fragile_connection", "direction": {"composition_id": "comp.arc01.prologue.second_arrival"}},
+      {"id": "arc01.prologue.0004.p004", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 325, "end": 651}, "en": {"start": 160, "end": 325}}, "beat": "fragile_connection", "direction": {"composition_id": "comp.arc01.prologue.second_arrival"}},
+      {"id": "arc01.prologue.0004.p005", "kind": "dialogue", "speaker": null, "ranges": {"pt_BR": {"start": 651, "end": 655}, "en": {"start": 325, "end": 329}}, "beat": "fragile_connection", "direction": {"composition_id": "comp.arc01.prologue.second_arrival"}}
+    ],
+    "arc01.prologue.0005": [
+      {"id": "arc01.prologue.0005.p001", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 0, "end": 90}, "en": {"start": 0, "end": 70}}, "beat": "fragile_connection", "direction": {"composition_id": "comp.arc01.prologue.second_arrival"}},
+      {"id": "arc01.prologue.0005.p002", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 90, "end": 270}, "en": {"start": 70, "end": 229}}, "beat": "fragile_connection", "direction": {"composition_id": "comp.arc01.prologue.hand_contact"}},
+      {"id": "arc01.prologue.0005.p003", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 270, "end": 360}, "en": {"start": 229, "end": 293}}, "beat": "fragile_connection", "direction": {"composition_id": "comp.arc01.prologue.hand_contact"}}
+    ],
+    "arc01.prologue.0006": [
+      {"id": "arc01.prologue.0006.p001", "kind": "dialogue", "speaker": null, "ranges": {"pt_BR": {"start": 0, "end": 11}, "en": {"start": 0, "end": 18}}, "beat": "final_resolve", "direction": {"composition_id": "comp.arc01.prologue.hand_contact"}},
+      {"id": "arc01.prologue.0006.p002", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 11, "end": 210}, "en": {"start": 18, "end": 106}}, "beat": "final_resolve", "direction": {"composition_id": "comp.arc01.prologue.hand_contact"}},
+      {"id": "arc01.prologue.0006.p003", "kind": "dialogue", "speaker": null, "ranges": {"pt_BR": {"start": 210, "end": 250}, "en": {"start": 106, "end": 147}}, "beat": "final_resolve", "direction": {"composition_id": "comp.arc01.prologue.hand_contact"}},
+      {"id": "arc01.prologue.0006.p004", "kind": "narration", "speaker": null, "ranges": {"pt_BR": {"start": 250, "end": 304}, "en": {"start": 147, "end": 200}}, "beat": "death_blackout", "direction": {"composition_id": "cg.arc01.prologue.final_moment"}}
+    ]
+  }
+}

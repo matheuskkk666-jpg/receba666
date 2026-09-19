@@ -1,0 +1,50 @@
+{
+  "coverage": {
+    "pt_BR": {
+      "source_blocks": 6,
+      "mapped_blocks": 6,
+      "unmapped_blocks": 0
+    },
+    "en": {
+      "source_blocks": 6,
+      "mapped_blocks": 6,
+      "unmapped_blocks": 0
+    }
+  },
+  "new_units": [],
+  "preserved_units": [
+    {
+      "unit_id": "arc01.prologue.u001",
+      "narrative_id": "arc01.prologue.0001"
+    },
+    {
+      "unit_id": "arc01.prologue.u002",
+      "narrative_id": "arc01.prologue.0002"
+    },
+    {
+      "unit_id": "arc01.prologue.u003",
+      "narrative_id": "arc01.prologue.0003"
+    },
+    {
+      "unit_id": "arc01.prologue.u004",
+      "narrative_id": "arc01.prologue.0004"
+    },
+    {
+      "unit_id": "arc01.prologue.u005",
+      "narrative_id": "arc01.prologue.0005"
+    },
+    {
+      "unit_id": "arc01.prologue.u006",
+      "narrative_id": "arc01.prologue.0006"
+    }
+  ],
+  "removed_or_retired_units": [],
+  "conflicts": [],
+  "unmapped": {
+    "pt_BR": [],
+    "en": []
+  },
+  "missing_translations": [],
+  "review_required": [],
+  "blockers": []
+}

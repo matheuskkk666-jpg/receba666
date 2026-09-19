@@ -20,13 +20,19 @@ init python:
         prepare_position(start_id, True)
 
     def prepare_continue():
-        prepare_position(persistent.resume_state["narrative_id"], False)
+        prepare_position(persistent.resume_state["narrative_id"], False, persistent.resume_state.get("presentation_id"))
 
     def prepare_chapter_navigation(chapter_id):
         prepare_position(project_data["chapter_by_id"][chapter_id]["first_narrative_id"], True)
 
     def should_autosave_after_frame(chapter_changed):
         return chapter_changed or project_data["narrative_index"][current_id] % AUTOSAVE_INTERVAL == 0
+
+    def next_presentation_id():
+        segments = presentation_for(project_data, current_id)
+        ids = [segment["id"] for segment in segments]
+        position = ids.index(current_presentation_id) + 1
+        return ids[position] if position < len(ids) else None
 
     def controlled_menu_exit():
         if current_id and store.reading_context == "normal":
@@ -36,6 +42,7 @@ init python:
         memory = project_data["memory_by_id"][memory_id]
         store.memory_replay_snapshot = {
             "current_scene": current_scene, "current_id": current_id,
+            "current_presentation_id": current_presentation_id,
             "current_chapter": current_chapter, "frame_index": frame_index,
             "frames": frames, "director_state": dict(director_state),
             "chapter_opening_pending": chapter_opening_pending, "scene_change_pending": scene_change_pending,
@@ -50,6 +57,7 @@ init python:
         if snapshot:
             store.current_scene = snapshot["current_scene"]
             store.current_id = snapshot["current_id"]
+            store.current_presentation_id = snapshot["current_presentation_id"]
             store.current_chapter = snapshot["current_chapter"]
             store.frame_index = snapshot["frame_index"]
             store.frames = snapshot["frames"]
@@ -117,19 +125,27 @@ label reading_loop:
         if reading_context == "normal" and (chapter_changed or scene_change_pending or should_autosave_after_frame(False)):
             $ request_autosave("chapter_entry" if chapter_changed else ("scene_change" if scene_change_pending else "reading_interval"))
             $ scene_change_pending = False
-        $ reader(localized_entry().get("text", ""))
-        if reading_context == "memory_replay" and current_id == memory_replay_target["replay_end_id"]:
-            $ finish_memory_replay()
-            hide screen scene_art onlayer master
-            jump memory_replay_return
-        $ next_id = next_narrative_id()
-        if next_id is not None:
-            $ next_chapter = chapter_for_narrative(project_data, next_id)
-            $ prepare_position(next_id, next_chapter != current_chapter)
+        $ reader(presentation_text())
+        $ next_presentation = next_presentation_id()
+        if next_presentation is not None:
+            $ store.current_presentation_id = next_presentation
+            if reading_context == "normal":
+                $ update_resume_position()
         else:
-            $ complete_journey()
-            $ request_autosave("journey_complete")
-            $ journey_finished = True
+            if reading_context == "normal":
+                $ record_position()
+            if reading_context == "memory_replay" and current_id == memory_replay_target["replay_end_id"]:
+                $ finish_memory_replay()
+                hide screen scene_art onlayer master
+                jump memory_replay_return
+            $ next_id = next_narrative_id()
+            if next_id is not None:
+                $ next_chapter = chapter_for_narrative(project_data, next_id)
+                $ prepare_position(next_id, next_chapter != current_chapter)
+            else:
+                $ complete_journey()
+                $ request_autosave("journey_complete")
+                $ journey_finished = True
     hide screen scene_art onlayer master
     $ renpy.music.stop(channel="music", fadeout=1.0)
     $ renpy.music.stop(channel="ambience", fadeout=1.0)

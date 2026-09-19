@@ -1,0 +1,50 @@
+[
+  {
+    "id": "arc01.prologue.0001",
+    "scene": "arc01.prologue.sc001",
+    "kind": "narration",
+    "provenance": "source_exact",
+    "status": "source_exact",
+    "source_unit": "arc01.prologue.u001"
+  },
+  {
+    "id": "arc01.prologue.0002",
+    "scene": "arc01.prologue.sc001",
+    "kind": "narration",
+    "provenance": "source_exact",
+    "status": "source_exact",
+    "source_unit": "arc01.prologue.u002"
+  },
+  {
+    "id": "arc01.prologue.0003",
+    "scene": "arc01.prologue.sc001",
+    "kind": "narration",
+    "provenance": "source_exact",
+    "status": "source_exact",
+    "source_unit": "arc01.prologue.u003"
+  },
+  {
+    "id": "arc01.prologue.0004",
+    "scene": "arc01.prologue.sc001",
+    "kind": "narration",
+    "provenance": "source_exact",
+    "status": "source_exact",
+    "source_unit": "arc01.prologue.u004"
+  },
+  {
+    "id": "arc01.prologue.0005",
+    "scene": "arc01.prologue.sc001",
+    "kind": "narration",
+    "provenance": "source_exact",
+    "status": "source_exact",
+    "source_unit": "arc01.prologue.u005"
+  },
+  {
+    "id": "arc01.prologue.0006",
+    "scene": "arc01.prologue.sc001",
+    "kind": "thought",
+    "provenance": "source_exact",
+    "status": "source_exact",
+    "source_unit": "arc01.prologue.u006"
+  }
+]

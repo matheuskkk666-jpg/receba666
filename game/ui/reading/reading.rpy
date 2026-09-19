@@ -10,7 +10,7 @@ screen say(who, what):
         padding (52, 28)
         vbox:
             spacing 15
-            text localized_entry().get("speaker", "") style "say_label" id "who"
+            text presentation_speaker() style "say_label" id "who"
             text what style "say_dialogue" id "what"
     add Solid("#bda576", xsize=1440, ysize=2) xpos 240 ypos 755
     imagebutton:

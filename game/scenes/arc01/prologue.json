@@ -1,0 +1,34 @@
+[
+  {
+    "id": "arc01.prologue.sc001",
+    "defaults": {
+      "background": "prologue_ground_placeholder",
+      "music": null,
+      "ambience": null,
+      "lighting": "#18070cb8",
+      "shot": "low",
+      "animation": "subtle",
+      "music_gain": 0.0
+    },
+    "sequence": [
+      {
+        "dialogue": "arc01.prologue.0001"
+      },
+      {
+        "dialogue": "arc01.prologue.0002"
+      },
+      {
+        "dialogue": "arc01.prologue.0003"
+      },
+      {
+        "dialogue": "arc01.prologue.0004"
+      },
+      {
+        "dialogue": "arc01.prologue.0005"
+      },
+      {
+        "dialogue": "arc01.prologue.0006"
+      }
+    ]
+  }
+]
