@@ -29,8 +29,42 @@ init python:
         return chapter_changed or project_data["narrative_index"][current_id] % AUTOSAVE_INTERVAL == 0
 
     def controlled_menu_exit():
-        if current_id:
+        if current_id and store.reading_context == "normal":
             request_autosave("menu_exit")
+
+    def begin_memory_replay(memory_id):
+        memory = project_data["memory_by_id"][memory_id]
+        store.memory_replay_snapshot = {
+            "current_scene": current_scene, "current_id": current_id,
+            "current_chapter": current_chapter, "frame_index": frame_index,
+            "frames": frames, "director_state": dict(director_state),
+            "chapter_opening_pending": chapter_opening_pending, "scene_change_pending": scene_change_pending,
+        }
+        store.memory_replay_target = memory
+        store.reading_context = "memory_replay"
+        prepare_position(memory["replay_start_id"], False)
+
+    def restore_memory_replay():
+        snapshot = store.memory_replay_snapshot
+        store.reading_context = "normal"
+        if snapshot:
+            store.current_scene = snapshot["current_scene"]
+            store.current_id = snapshot["current_id"]
+            store.current_chapter = snapshot["current_chapter"]
+            store.frame_index = snapshot["frame_index"]
+            store.frames = snapshot["frames"]
+            store.director_state = snapshot["director_state"]
+            store.chapter_opening_pending = snapshot["chapter_opening_pending"]
+            store.scene_change_pending = snapshot["scene_change_pending"]
+            apply_direction(director_state)
+        store.memory_replay_snapshot = None
+        store.memory_replay_target = None
+
+    def finish_memory_replay():
+        restore_memory_replay()
+
+    def cancel_memory_replay():
+        restore_memory_replay()
 
 label start:
     jump journey_start
@@ -51,6 +85,21 @@ label chapter_start:
     $ prepare_chapter_navigation(chapter_navigation_target)
     jump reading_loop
 
+label memory_replay_start:
+    if not memory_replay_target or not is_memory_unlocked(memory_replay_target):
+        jump main_menu
+    $ begin_memory_replay(memory_replay_target)
+    jump reading_loop
+
+label memory_replay_return:
+    call screen memories
+    return
+
+label memory_replay_cancel:
+    $ cancel_memory_replay()
+    hide screen scene_art onlayer master
+    jump memory_replay_return
+
 label reading_loop:
     show screen scene_art onlayer master
     $ journey_finished = False
@@ -65,10 +114,14 @@ label reading_loop:
                 $ chapter_opening_pending = False
             show screen journey_indicator(current_chapter)
         $ enter_frame(frame_index)
-        if chapter_changed or scene_change_pending or should_autosave_after_frame(False):
+        if reading_context == "normal" and (chapter_changed or scene_change_pending or should_autosave_after_frame(False)):
             $ request_autosave("chapter_entry" if chapter_changed else ("scene_change" if scene_change_pending else "reading_interval"))
             $ scene_change_pending = False
         $ reader(localized_entry().get("text", ""))
+        if reading_context == "memory_replay" and current_id == memory_replay_target["replay_end_id"]:
+            $ finish_memory_replay()
+            hide screen scene_art onlayer master
+            jump memory_replay_return
         $ next_id = next_narrative_id()
         if next_id is not None:
             $ next_chapter = chapter_for_narrative(project_data, next_id)

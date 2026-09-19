@@ -23,7 +23,8 @@ init python:
         frame = frames[index]
         store.current_id = frame["id"]
         store.director_state = dict(frame["state"])
-        record_position()
+        if store.reading_context == "normal":
+            record_position()
         apply_direction(director_state)
 
     def next_narrative_id():

@@ -1,0 +1,13 @@
+{
+  "memory.illustration.observatory":{"title":"Luz no observatório","description":"A primeira luz permanece acesa."},
+  "memory.illustration.window":{"title":"Além da janela","description":"A vigia encontra uma nova perspectiva."},
+  "memory.character.lia":{"name":"Lia","description":"Uma voz que responde à vigia."},
+  "memory.character.unseen":{"name":"Nora","description":"Uma presença ainda distante."},
+  "memory.scene.first_signal":{"title":"O primeiro sinal","description":"O começo da conversa."},
+  "memory.scene.window":{"title":"Além da janela","description":"Uma volta ao telhado."},
+  "memory.death.fading_signal":{"title":"O sinal que se apagou","description":"Um registro interrompido."},
+  "memory.death.unseen":{"title":"A queda silenciosa","description":"Um registro posterior."},
+  "memory.fact.lia.signal":{"text":"Lia responde à luz do observatório."},
+  "memory.fact.lia.window":{"text":"Lia conhece a janela da vigia."},
+  "memory.fact.unseen":{"text":"Nora chega quando a noite termina."}
+}

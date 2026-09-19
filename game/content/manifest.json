@@ -41,5 +41,12 @@
   "ui": {
     "pt_BR": "translations/pt_BR/ui.json",
     "en": "translations/en/ui.json"
+  },
+  "memories": {
+    "entries": "memories/placeholder/entries.json",
+    "translations": {
+      "pt_BR": "translations/pt_BR/memories.json",
+      "en": "translations/en/memories.json"
+    }
   }
 }

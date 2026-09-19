@@ -25,6 +25,8 @@ def load_project(root, read=None):
     narrative_order = manifest["narrative_order"]
     chapters = get(manifest["chapters"])
     chapter_order = manifest["chapter_order"]
+    memory_manifest = manifest.get("memories")
+    memories = get(memory_manifest["entries"]) if memory_manifest else []
     project = {
         "manifest_version": manifest["version"],
         "narrative": narrative,
@@ -41,6 +43,9 @@ def load_project(root, read=None):
         "chapter_index": {chapter_id: index for index, chapter_id in enumerate(chapter_order)},
         "chapter_by_id": {chapter["id"]: chapter for chapter in chapters},
         "chapter_editions": {lang: get(manifest["chapter_translations"][lang]) for lang in LANGUAGES},
+        "memories": memories,
+        "memory_by_id": {entry["id"]: entry for entry in memories},
+        "memory_editions": {lang: get(memory_manifest["translations"][lang]) if memory_manifest else {} for lang in LANGUAGES},
     }
     project["scene_by_id"] = {scene["id"]: scene for scene in scenes}
     project["narrative_to_scene"] = {entry["id"]: entry["scene"] for entry in narrative}
@@ -67,6 +72,15 @@ def canonical_furthest_id(furthest_id, seen_ids, narrative_index):
         candidates.add(furthest_id)
     valid = [narrative_id for narrative_id in candidates if narrative_id in narrative_index]
     return max(valid, key=narrative_index.__getitem__) if valid else None
+
+def memory_unlocks(condition, seen_ids, seen_scenes, unlocked_chapters):
+    if "seen_id" in condition:
+        return condition["seen_id"] in seen_ids
+    if "seen_scene" in condition:
+        return condition["seen_scene"] in seen_scenes
+    if "chapter" in condition:
+        return condition["chapter"] in unlocked_chapters
+    return False
 
 def advance_progress(seen_ids, furthest_id, narrative_id, narrative_index):
     """Returns seen content and furthest stable ID using canonical data order."""
@@ -120,9 +134,23 @@ def validate(project, root):
                 errors.append("duplicate/empty " + label + ": " + str(key))
             seen.add(key)
         return seen
+    def validate_unlock(condition, label):
+        if not isinstance(condition, dict) or len(condition) != 1:
+            errors.append("invalid unlock condition: " + label)
+            return
+        key, value = next(iter(condition.items()))
+        if key == "seen_id" and value not in ids:
+            errors.append("invalid seen_id unlock: " + label)
+        elif key == "seen_scene" and value not in scenes:
+            errors.append("invalid seen_scene unlock: " + label)
+        elif key == "chapter" and value not in chapters:
+            errors.append("invalid chapter unlock: " + label)
+        elif key not in {"seen_id", "seen_scene", "chapter"}:
+            errors.append("invalid unlock condition: " + label)
     ids = check_unique(project["narrative"], "narrative ID")
     scenes = check_unique(project["scenes"], "scene ID")
     chapters = check_unique(project["chapters"], "chapter ID")
+    memory_ids = check_unique(project["memories"], "memory ID")
     order = project["narrative_order"]
     order_ids = check_unique([{"id": narrative_id} for narrative_id in order], "narrative order ID")
     for key in sorted(ids - order_ids):
@@ -207,4 +235,43 @@ def validate(project, root):
         for path in assets.values():
             if not (Path(root) / path).is_file():
                 errors.append("missing asset: " + path)
+    allowed_categories = {"illustrations", "characters", "scenes", "death_memories"}
+    fact_ids = set()
+    for memory in project["memories"]:
+        memory_id = memory["id"]
+        if memory.get("category") not in allowed_categories:
+            errors.append("invalid memory category: " + memory_id)
+        if memory.get("chapter_id") not in chapters:
+            errors.append("invalid memory chapter: " + memory_id)
+        validate_unlock(memory.get("unlock"), "memory: " + memory_id)
+        if memory.get("asset") and not (Path(root) / memory["asset"]).is_file():
+            errors.append("missing memory asset: " + memory_id)
+        if memory.get("category") in {"scenes", "death_memories"}:
+            start, end = memory.get("replay_start_id"), memory.get("replay_end_id")
+            if start not in ids or end not in ids or project["narrative_index"].get(start, 0) > project["narrative_index"].get(end, -1):
+                errors.append("invalid memory replay target: " + memory_id)
+        if memory.get("category") == "characters":
+            if memory.get("first_narrative_id") not in ids:
+                errors.append("invalid memory character: " + memory_id)
+            for fact in memory.get("facts", []):
+                fact_id = fact.get("id")
+                if not fact_id or fact_id in fact_ids:
+                    errors.append("invalid memory fact: " + memory_id)
+                fact_ids.add(fact_id)
+                validate_unlock(fact.get("unlock"), "fact: " + str(fact_id))
+        for lang in LANGUAGES:
+            localized = project["memory_editions"][lang]
+            if memory_id not in localized:
+                errors.append("missing " + lang + " memory: " + memory_id)
+                continue
+            metadata = localized[memory_id]
+            fields = ("name", "description") if memory.get("category") == "characters" else ("title", "description")
+            if any(not str(metadata.get(field, "")).strip() for field in fields):
+                errors.append("incomplete " + lang + " memory metadata: " + memory_id)
+            for fact in memory.get("facts", []):
+                fact_id = fact.get("id")
+                if fact_id not in localized:
+                    errors.append("missing " + lang + " memory fact: " + str(fact_id))
+                elif not str(localized[fact_id].get("text", "")).strip():
+                    errors.append("incomplete " + lang + " memory fact: " + fact_id)
     return errors

@@ -1,0 +1,10 @@
+[
+  {"id":"memory.illustration.observatory","category":"illustrations","unlock":{"seen_id":"test.ch01.observatory.0001"},"chapter_id":"test.arc01.ch01","asset":"assets/backgrounds/observatory.png"},
+  {"id":"memory.illustration.window","category":"illustrations","unlock":{"seen_id":"test.ch02.rooftop.0002"},"chapter_id":"test.arc01.ch02","asset":"assets/backgrounds/observatory.png"},
+  {"id":"memory.character.lia","category":"characters","unlock":{"seen_id":"test.ch01.observatory.0002"},"chapter_id":"test.arc01.ch01","asset":"assets/backgrounds/observatory.png","first_narrative_id":"test.ch01.observatory.0002","facts":[{"id":"memory.fact.lia.signal","unlock":{"seen_id":"test.ch01.observatory.0002"}},{"id":"memory.fact.lia.window","unlock":{"seen_id":"test.ch02.rooftop.0002"}}]},
+  {"id":"memory.character.unseen","category":"characters","unlock":{"seen_id":"test.ch02.rooftop.0003"},"chapter_id":"test.arc01.ch02","asset":"assets/backgrounds/observatory.png","first_narrative_id":"test.ch02.rooftop.0003","facts":[{"id":"memory.fact.unseen","unlock":{"seen_id":"test.ch02.rooftop.0003"}}]},
+  {"id":"memory.scene.first_signal","category":"scenes","unlock":{"seen_scene":"test_observatory"},"chapter_id":"test.arc01.ch01","replay_start_id":"test.ch01.observatory.0001","replay_end_id":"test.ch01.observatory.0002"},
+  {"id":"memory.scene.window","category":"scenes","unlock":{"seen_scene":"test_rooftop"},"chapter_id":"test.arc01.ch02","replay_start_id":"test.ch02.rooftop.0001","replay_end_id":"test.ch02.rooftop.0002"},
+  {"id":"memory.death.fading_signal","category":"death_memories","unlock":{"seen_id":"test.ch02.rooftop.0002"},"chapter_id":"test.arc01.ch02","replay_start_id":"test.ch02.rooftop.0001","replay_end_id":"test.ch02.rooftop.0002","asset":"assets/backgrounds/observatory.png"},
+  {"id":"memory.death.unseen","category":"death_memories","unlock":{"seen_id":"test.ch02.rooftop.0003"},"chapter_id":"test.arc01.ch02","replay_start_id":"test.ch02.rooftop.0002","replay_end_id":"test.ch02.rooftop.0003","asset":"assets/backgrounds/observatory.png"}
+]
