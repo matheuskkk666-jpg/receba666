@@ -48,5 +48,29 @@
       "pt_BR": "translations/pt_BR/memories.json",
       "en": "translations/en/memories.json"
     }
+  },
+  "presentation": {
+    "fragments": [
+      "content/presentation/arc01/prologue.json"
+    ],
+    "narrative_sources": [
+      "generated/arc01/prologue/narrative/arc01.prologue.json"
+    ],
+    "translation_sources": {
+      "pt_BR": [
+        "generated/arc01/prologue/translations/pt_BR/arc01.prologue.json"
+      ],
+      "en": [
+        "generated/arc01/prologue/translations/en/arc01.prologue.json"
+      ]
+    },
+    "required_narrative_ids": [
+      "arc01.prologue.0001",
+      "arc01.prologue.0002",
+      "arc01.prologue.0003",
+      "arc01.prologue.0004",
+      "arc01.prologue.0005",
+      "arc01.prologue.0006"
+    ]
   }
 }

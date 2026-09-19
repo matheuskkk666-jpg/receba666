@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "narrative": {
+    "arc01.prologue.0001": [
+      {
+        "id": "arc01.prologue.0001.p001",
+        "kind": "thought",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 0, "end": 26},
+          "en": {"start": 0, "end": 33}
+        }
+      },
+      {
+        "id": "arc01.prologue.0001.p002",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 26, "end": 320},
+          "en": {"start": 33, "end": 298}
+        }
+      },
+      {
+        "id": "arc01.prologue.0001.p003",
+        "kind": "thought",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 320, "end": 378},
+          "en": {"start": 298, "end": 369}
+        }
+      },
+      {
+        "id": "arc01.prologue.0001.p004",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 378, "end": 636},
+          "en": {"start": 369, "end": 462}
+        }
+      },
+      {
+        "id": "arc01.prologue.0001.p005",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 636, "end": 955},
+          "en": {"start": 462, "end": 522}
+        }
+      }
+    ],
+    "arc01.prologue.0002": [
+      {
+        "id": "arc01.prologue.0002.p001",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 0, "end": 110},
+          "en": {"start": 0, "end": 75}
+        }
+      },
+      {
+        "id": "arc01.prologue.0002.p002",
+        "kind": "thought",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 110, "end": 262},
+          "en": {"start": 75, "end": 126}
+        }
+      },
+      {
+        "id": "arc01.prologue.0002.p003",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 262, "end": 405},
+          "en": {"start": 126, "end": 443}
+        }
+      }
+    ],
+    "arc01.prologue.0003": [
+      {
+        "id": "arc01.prologue.0003.p001",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 0, "end": 187},
+          "en": {"start": 0, "end": 308}
+        }
+      },
+      {
+        "id": "arc01.prologue.0003.p002",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 187, "end": 395},
+          "en": {"start": 308, "end": 478}
+        }
+      }
+    ],
+    "arc01.prologue.0004": [
+      {
+        "id": "arc01.prologue.0004.p001",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 0, "end": 197},
+          "en": {"start": 0, "end": 150}
+        }
+      },
+      {
+        "id": "arc01.prologue.0004.p002",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 197, "end": 410},
+          "en": {"start": 150, "end": 329}
+        }
+      }
+    ],
+    "arc01.prologue.0005": [
+      {
+        "id": "arc01.prologue.0005.p001",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 0, "end": 247},
+          "en": {"start": 0, "end": 98}
+        }
+      },
+      {
+        "id": "arc01.prologue.0005.p002",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 247, "end": 477},
+          "en": {"start": 98, "end": 293}
+        }
+      }
+    ],
+    "arc01.prologue.0006": [
+      {
+        "id": "arc01.prologue.0006.p001",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 0, "end": 385},
+          "en": {"start": 0, "end": 105}
+        }
+      },
+      {
+        "id": "arc01.prologue.0006.p002",
+        "kind": "thought",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 385, "end": 725},
+          "en": {"start": 105, "end": 146}
+        }
+      },
+      {
+        "id": "arc01.prologue.0006.p003",
+        "kind": "narration",
+        "speaker": null,
+        "ranges": {
+          "pt_BR": {"start": 725, "end": 780},
+          "en": {"start": 146, "end": 200}
+        }
+      }
+    ]
+  }
+}

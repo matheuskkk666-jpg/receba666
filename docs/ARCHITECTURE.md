@@ -141,6 +141,18 @@ en:
 
 Implementation may use separate files per language if cleaner. The invariant is shared ID alignment.
 
+## Presentation segments
+Canonical narrative IDs remain the identity used by progress, saves, alignment,
+and chapter order. Optional presentation fragments split one canonical entry
+into semantic display segments without copying its localized text. Each shared
+segment ID stores independent `pt_BR` and `en` ranges relative to that
+canonical translation row. Ranges cover the source text exactly; trimming outer
+whitespace is allowed only when resolving text for display.
+
+Content without explicit presentation metadata receives one transient segment
+covering the complete translation row. This compatibility fallback is derived
+at load time and is never persisted as narrative content.
+
 ## Persistence
 Persistent progression:
 - furthest narrative position;

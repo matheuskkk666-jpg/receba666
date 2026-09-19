@@ -33,7 +33,8 @@ testsuite foundation:
         screenshot "m2-chapter-card-pt.png"
         pause 2.7
         assert screen "say"
-        screenshot "m2-reading-indicator-pt.png"
+        # One glyph may differ while the deterministic typewriter is active.
+        screenshot "m2-reading-indicator-pt.png" max_pixel_difference 250
         assert eval current_chapter == "test.arc01.ch01"
         assert eval current_id == "test.ch01.observatory.0001"
         assert eval is_chapter_unlocked("test.arc01.ch01")
@@ -58,10 +59,11 @@ testsuite foundation:
         assert eval slot_metadata(renpy.slot_json("1-1")["chapter_id"])["title"] == "A Última Luz"
         run Function(set_edition, "en")
         assert eval slot_metadata(renpy.slot_json("1-1")["chapter_id"])["title"] == "The Last Light"
-        screenshot "m2-save-slot-en.png"
+        # Slot timestamps vary between runs; keep the tolerance below 0.05% of 1080p.
+        screenshot "m2-save-slot-en.png" max_pixel_difference 1000
         run Function(set_edition, "pt_BR")
         assert eval slot_metadata(renpy.slot_json("1-1")["chapter_id"])["title"] == "A Última Luz"
-        screenshot "m2-save-slot-pt.png"
+        screenshot "m2-save-slot-pt.png" max_pixel_difference 1000
         click expression ui_text("back")
         advance until screen "chapter_card"
         assert eval current_chapter == "test.arc01.ch02"
