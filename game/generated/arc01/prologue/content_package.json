@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "runtime_ready": true,
+  "fragments": {
+    "narrative": [
+      "narrative/arc01.prologue.json"
+    ],
+    "translations": {
+      "pt_BR": [
+        "translations/pt_BR/arc01.prologue.json"
+      ],
+      "en": [
+        "translations/en/arc01.prologue.json"
+      ]
+    }
+  },
+  "narrative_order": [
+    "arc01.prologue.0001",
+    "arc01.prologue.0002",
+    "arc01.prologue.0003",
+    "arc01.prologue.0004",
+    "arc01.prologue.0005",
+    "arc01.prologue.0006"
+  ],
+  "chapters": [
+    {
+      "id": "arc01.prologue",
+      "narrative_ids": [
+        "arc01.prologue.0001",
+        "arc01.prologue.0002",
+        "arc01.prologue.0003",
+        "arc01.prologue.0004",
+        "arc01.prologue.0005",
+        "arc01.prologue.0006"
+      ],
+      "scene_hints": [],
+      "first_narrative_id": "arc01.prologue.0001",
+      "last_narrative_id": "arc01.prologue.0006"
+    }
+  ],
+  "review_required": [
+    {
+      "unit_id": "arc01.prologue.u001",
+      "reason": "editorial metadata or scene hint pending"
+    },
+    {
+      "unit_id": "arc01.prologue.u002",
+      "reason": "editorial metadata or scene hint pending"
+    },
+    {
+      "unit_id": "arc01.prologue.u003",
+      "reason": "editorial metadata or scene hint pending"
+    },
+    {
+      "unit_id": "arc01.prologue.u004",
+      "reason": "editorial metadata or scene hint pending"
+    },
+    {
+      "unit_id": "arc01.prologue.u005",
+      "reason": "editorial metadata or scene hint pending"
+    },
+    {
+      "unit_id": "arc01.prologue.u006",
+      "reason": "editorial metadata or scene hint pending"
+    }
+  ],
+  "missing_translations": [],
+  "conflicts": [],
+  "files_to_integrate": [
+    "content manifest fragments and canonical narrative order",
+    "editorial scene definitions for listed scene_hints",
+    "localized chapter metadata for every listed chapter"
+  ]
+}

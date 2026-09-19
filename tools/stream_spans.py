@@ -20,4 +20,4 @@ def validate_spans(stream, fingerprint, spans):
     return errors
 
 def virtual_blocks(stream, source_alias, language, spans):
-    return [{'source_id':span['id'],'source_alias':source_alias,'stream_sha256':stream_fingerprint(stream),'start':span['start'],'end':span['end'],'text':stream[span['start']:span['end']],'source_language':language,'status':span.get('status','reviewed')} for span in spans]
+    return [{'source_id':span['id'],'source_alias':source_alias,'stream_sha256':stream_fingerprint(stream),'start':span['start'],'end':span['end'],'text':stream[span['start']:span['end']],'join_prefix':'','source_language':language,'status':span.get('status','reviewed')} for span in spans]
