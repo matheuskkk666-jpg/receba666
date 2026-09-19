@@ -1,116 +1,183 @@
 #!/usr/bin/env python3
-"""Offline content-production pipeline. Uses only Python's standard library."""
-import argparse, hashlib, json, sys
+"""Offline, deterministic import tooling for authorized local content."""
+import argparse
+import hashlib
+import json
 from pathlib import Path
 
 LANGS = ("pt_BR", "en")
 
+
 def read_json(path): return json.loads(Path(path).read_text(encoding="utf-8"))
+
+
 def write_json(path, data):
     path = Path(path); path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-def digest(text): return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def fingerprint(texts):
+    """Hashes an exact ordered list, including source-block boundaries."""
+    return hashlib.sha256(json.dumps(texts, ensure_ascii=False, separators=(",", ":")).encode("utf-8")).hexdigest()
+
+
 def load_blocks(path): return read_json(path)["blocks"]
-def index_blocks(blocks): return {block["source_id"]: block for block in blocks}
+
+
+def index_blocks(blocks):
+    index, errors = {}, []
+    for block in blocks:
+        source_id = block.get("source_id")
+        if not source_id: errors.append("empty source_id")
+        elif source_id in index: errors.append("duplicate source_id: " + source_id)
+        else: index[source_id] = block
+    return index, errors
+
 
 def normalize_txt(source, output, language, source_alias, chapter_source_id):
     raw = Path(source).read_text(encoding="utf-8")
-    # Newlines separating paragraphs are structure, not narrative text in a block.
     paragraphs = [part.strip("\n") for part in raw.replace("\r\n", "\n").split("\n\n") if part.strip("\n")]
-    blocks = []
-    for index, text in enumerate(paragraphs, 1):
-        blocks.append({"source_id": f"{chapter_source_id}.b{index:04d}", "chapter_source_id": chapter_source_id,
-          "kind": "review_required", "speaker": None, "text": text, "source_language": language,
-          "source_provenance": source_alias, "review_notes": "Semantic kind/speaker require editorial review."})
+    blocks = [{"source_id": f"{chapter_source_id}.b{number:04d}", "chapter_source_id": chapter_source_id,
+               "kind": "review_required", "speaker": None, "text": text, "source_language": language,
+               "source_provenance": source_alias, "review_notes": "Semantic kind/speaker require editorial review."}
+              for number, text in enumerate(paragraphs, 1)]
     write_json(output, {"version": 1, "blocks": blocks})
     return {"blocks": len(blocks)}
 
-def validate_alignment(alignment, sources):
-    errors, mapped = [], {lang: set() for lang in LANGS}
-    unit_ids = set()
-    for unit in alignment.get("units", []):
-        if not unit.get("unit_id") or not unit.get("chapter_id"): errors.append("unit missing unit_id/chapter_id")
-        if unit.get("unit_id") in unit_ids: errors.append(f"duplicate unit_id: {unit.get('unit_id')}")
-        unit_ids.add(unit.get("unit_id"))
-        for lang in LANGS:
-            ids = unit.get(lang, [])
-            if not ids: errors.append(f"missing {lang} alignment: {unit.get('unit_id')}")
-            for source_id in ids:
-                if source_id not in sources[lang]: errors.append(f"unknown {lang} source block: {source_id}")
-                elif source_id in mapped[lang]: errors.append(f"duplicate {lang} source block: {source_id}")
-                mapped[lang].add(source_id)
-    unmapped = {lang: sorted(set(sources[lang]) - mapped[lang]) for lang in LANGS}
-    return errors, unmapped
 
-def next_narrative_id(chapter_id, ledger_units, allocated):
-    """Allocate only above existing IDs, so later inserts never renumber old text."""
+def load_sources(args):
+    sources, errors = {}, []
+    for language in LANGS:
+        sources[language], duplicates = index_blocks(load_blocks(getattr(args, language)))
+        errors.extend(f"{language} {error}" for error in duplicates)
+    return sources, errors
+
+
+def validate_alignment(alignment, sources):
+    errors, mapped, missing, unit_ids = [], {language: set() for language in LANGS}, [], set()
+    for unit in alignment.get("units", []):
+        unit_id = unit.get("unit_id")
+        if not unit_id or not unit.get("chapter_id"): errors.append("unit missing unit_id/chapter_id")
+        if unit_id in unit_ids: errors.append("duplicate unit_id: " + str(unit_id))
+        unit_ids.add(unit_id)
+        for language in LANGS:
+            source_ids = unit.get(language, [])
+            if not source_ids:
+                missing.append({"unit_id": unit_id, "language": language})
+                continue
+            for source_id in source_ids:
+                if source_id not in sources[language]: errors.append(f"unknown {language} source block: {source_id}")
+                elif source_id in mapped[language]: errors.append(f"duplicate {language} source block: {source_id}")
+                mapped[language].add(source_id)
+    retired = set(alignment.get("retired_units", []))
+    if len(retired) != len(alignment.get("retired_units", [])): errors.append("duplicate retired unit declaration")
+    if unit_ids & retired: errors.append("active unit also declared retired")
+    unmapped = {language: sorted(set(sources[language]) - mapped[language]) for language in LANGS}
+    return errors, unmapped, missing, unit_ids, retired
+
+
+def load_ledger(path):
+    ledger = read_json(path) if Path(path).exists() else {"version": 2, "units": {}, "retired_units": {}}
+    ledger.setdefault("units", {}); ledger.setdefault("retired_units", {}); ledger["version"] = 2
+    return ledger
+
+
+def owners_for(ledger):
+    owners = {}
+    for bucket in ("units", "retired_units"):
+        for unit_id, entry in ledger[bucket].items():
+            if entry.get("narrative_id"): owners[entry["narrative_id"]] = unit_id
+    return owners
+
+
+def next_narrative_id(chapter_id, reserved):
+    """Allocate above the largest reserved namespace value; never fill holes."""
     prefix = f"pipeline.{chapter_id}."
-    known = set(allocated)
-    known.update(unit.get("narrative_id") for unit in ledger_units.values())
-    number = 1
-    while f"{prefix}{number:04d}" in known:
-        number += 1
-    stable_id = f"{prefix}{number:04d}"
-    allocated.add(stable_id)
-    return stable_id
+    values = [int(item[len(prefix):]) for item in reserved if item.startswith(prefix) and len(item[len(prefix):]) == 4 and item[len(prefix):].isdigit()]
+    return f"{prefix}{max(values, default=0) + 1:04d}"
+
+
+def package_for(rows, report):
+    chapters, fragments = {}, {"narrative": [], "translations": {language: [] for language in LANGS}}
+    for unit, narrative_id, _ in rows:
+        chapter = chapters.setdefault(unit["chapter_id"], {"id": unit["chapter_id"], "narrative_ids": [], "scene_hints": []})
+        chapter["narrative_ids"].append(narrative_id)
+        if unit.get("scene_hint") and unit["scene_hint"] not in chapter["scene_hints"]: chapter["scene_hints"].append(unit["scene_hint"])
+    for chapter_id, chapter in chapters.items():
+        chapter["first_narrative_id"], chapter["last_narrative_id"] = chapter["narrative_ids"][0], chapter["narrative_ids"][-1]
+        fragments["narrative"].append(f"narrative/{chapter_id}.json")
+        for language in LANGS: fragments["translations"][language].append(f"translations/{language}/{chapter_id}.json")
+    return {"version": 1, "runtime_ready": not report["blockers"], "fragments": fragments,
+            "narrative_order": [narrative_id for _, narrative_id, _ in rows], "chapters": list(chapters.values()),
+            "review_required": report["review_required"], "missing_translations": report["missing_translations"],
+            "conflicts": report["conflicts"], "files_to_integrate": ["content manifest fragments and canonical narrative order", "editorial scene definitions for listed scene_hints", "localized chapter metadata for every listed chapter"]}
+
 
 def import_content(args):
-    sources = {lang: index_blocks(load_blocks(getattr(args, lang))) for lang in LANGS}
-    alignment = read_json(args.alignment)
-    errors, unmapped = validate_alignment(alignment, sources)
-    ledger = read_json(args.ledger) if Path(args.ledger).exists() else {"version": 1, "units": {}}
-    ledger.setdefault("units", {})
-    conflicts, rows, allocated = [], [], set()
-    for unit in alignment["units"]:
-        fingerprints = {lang: digest("".join(sources[lang][sid]["text"] for sid in unit[lang])) for lang in LANGS}
-        prior = ledger["units"].get(unit["unit_id"])
-        if prior and prior["fingerprints"] != fingerprints:
-            conflicts.append(unit["unit_id"]); continue
-        stable_id = prior["narrative_id"] if prior else unit.get("narrative_id") or next_narrative_id(unit["chapter_id"], ledger["units"], allocated)
-        allocated.add(stable_id)
-        rows.append((unit, stable_id, fingerprints))
-    coverage = {
-        lang: {"source_blocks": len(sources[lang]), "mapped_blocks": len(sources[lang]) - len(unmapped[lang]), "unmapped_blocks": len(unmapped[lang])}
-        for lang in LANGS
-    }
-    report = {"chapters": {}, "coverage": coverage, "narrative_ids": len(rows), "conflicts": conflicts, "unmapped": unmapped,
-              "would_create": [stable_id for _, stable_id, _ in rows]}
-    for unit, stable_id, fingerprints in rows:
-        chapter = report["chapters"].setdefault(unit["chapter_id"], {lang: {"blocks": 0, "mapped": 0} for lang in LANGS})
-        for lang in LANGS: chapter[lang]["blocks"] += len(unit[lang]); chapter[lang]["mapped"] += len(unit[lang])
-    if errors or conflicts or any(unmapped.values()):
-        report["errors"] = errors
+    sources, source_errors = load_sources(args); alignment = read_json(args.alignment)
+    errors, unmapped, missing, active_ids, retirements = validate_alignment(alignment, sources)
+    errors = source_errors + errors; ledger = load_ledger(args.ledger)
+    removed = sorted(set(ledger["units"]) - active_ids); undeclared = sorted(set(removed) - retirements)
+    errors.extend("removed unit requires retirement: " + item for item in undeclared)
+    errors.extend("unknown unit retirement: " + item for item in sorted(retirements - set(ledger["units"]) - set(ledger["retired_units"])))
+    conflicts, rows, new, preserved, owners = [], [], [], [], owners_for(ledger)
+    for unit in alignment.get("units", []):
+        unit_id = unit.get("unit_id")
+        if any(item["unit_id"] == unit_id for item in missing): continue
+        texts = {language: [sources[language][source_id]["text"] for source_id in unit[language]] for language in LANGS}
+        fingerprints = {language: fingerprint(texts[language]) for language in LANGS}
+        prior, explicit = ledger["units"].get(unit_id), unit.get("narrative_id")
+        if unit_id in ledger["retired_units"]: conflicts.append("retired unit reused: " + unit_id); continue
+        if prior and prior.get("fingerprints") != fingerprints: conflicts.append("fingerprint conflict: " + unit_id); continue
+        narrative_id = prior["narrative_id"] if prior else explicit or next_narrative_id(unit["chapter_id"], owners)
+        owner = owners.get(narrative_id)
+        if owner and owner != unit_id: conflicts.append(f"narrative_id collision: {narrative_id} ({owner}, {unit_id})"); continue
+        if prior and explicit and explicit != narrative_id: conflicts.append("narrative_id changed: " + unit_id); continue
+        owners[narrative_id] = unit_id; rows.append((unit, narrative_id, fingerprints))
+        (preserved if prior else new).append({"unit_id": unit_id, "narrative_id": narrative_id})
+    review_required = [{"unit_id": unit["unit_id"], "reason": "editorial metadata or scene hint pending"} for unit, _, _ in rows if unit.get("kind") == "review_required" or not unit.get("scene_hint") or unit.get("status") not in (None, "source_exact")]
+    coverage = {language: {"source_blocks": len(sources[language]), "mapped_blocks": len(sources[language]) - len(unmapped[language]), "unmapped_blocks": len(unmapped[language])} for language in LANGS}
+    blockers = errors + conflicts + [f"missing translation: {item['unit_id']} ({item['language']})" for item in missing] + [f"unmapped {language}: {source_id}" for language in LANGS for source_id in unmapped[language]]
+    removals = ([{"unit_id": unit_id, "status": "retired"} for unit_id in sorted(retirements)] +
+                [{"unit_id": unit_id, "status": "pending_review"} for unit_id in undeclared])
+    report = {"coverage": coverage, "new_units": new, "preserved_units": preserved, "removed_or_retired_units": removals, "conflicts": conflicts, "unmapped": unmapped, "missing_translations": missing, "review_required": review_required, "blockers": blockers}
+    package = package_for(rows, report)
+    if blockers:
+        if not args.dry_run:
+            write_json(Path(args.output) / "review_report.json", report); write_json(Path(args.output) / "content_package.json", package)
         return report, False
     if args.dry_run: return report, True
-    output = Path(args.output)
+    for unit_id in retirements:
+        if unit_id in ledger["units"]:
+            ledger["retired_units"][unit_id] = ledger["units"].pop(unit_id)
     by_chapter = {}
-    for unit, stable_id, fingerprints in rows:
+    for unit, narrative_id, fingerprints in rows:
         chapter = by_chapter.setdefault(unit["chapter_id"], {"narrative": [], "pt_BR": [], "en": []})
-        kind = unit.get("kind", "narration")
-        chapter["narrative"].append({"id": stable_id, "scene": unit.get("scene_hint", "review_required"), "kind": kind,
-          "provenance": "source_exact", "status": unit.get("status", "source_exact"), "source_unit": unit["unit_id"]})
-        for lang in LANGS:
-            # Paragraph boundaries are source structure and must survive a many-to-one alignment.
-            text = "\n\n".join(sources[lang][sid]["text"] for sid in unit[lang])
-            chapter[lang].append({"id": stable_id, "speaker": unit.get("speaker_hint", "") or "", "text": text,
-              "source_blocks": unit[lang], "status": unit.get("status", "source_exact")})
-        ledger["units"][unit["unit_id"]] = {"narrative_id": stable_id, "fingerprints": fingerprints, "chapter_id": unit["chapter_id"]}
+        chapter["narrative"].append({"id": narrative_id, "scene": unit.get("scene_hint", "review_required"), "kind": unit.get("kind", "narration"), "provenance": "source_exact", "status": unit.get("status", "source_exact"), "source_unit": unit["unit_id"]})
+        for language in LANGS: chapter[language].append({"id": narrative_id, "speaker": unit.get("speaker_hint", "") or "", "text": "\n\n".join(sources[language][source_id]["text"] for source_id in unit[language]), "source_blocks": unit[language], "status": unit.get("status", "source_exact")})
+        ledger["units"][unit["unit_id"]] = {"narrative_id": narrative_id, "fingerprints": fingerprints, "chapter_id": unit["chapter_id"]}
+    output = Path(args.output)
     for chapter_id, payload in by_chapter.items():
         write_json(output / "narrative" / f"{chapter_id}.json", payload["narrative"])
-        for lang in LANGS: write_json(output / "translations" / lang / f"{chapter_id}.json", payload[lang])
-    write_json(args.ledger, ledger); write_json(output / "report.json", report)
+        for language in LANGS: write_json(output / "translations" / language / f"{chapter_id}.json", payload[language])
+    write_json(args.ledger, ledger); write_json(output / "report.json", report); write_json(output / "content_package.json", package)
     return report, True
 
+
 def main():
-    parser=argparse.ArgumentParser(); sub=parser.add_subparsers(dest="cmd", required=True)
-    norm=sub.add_parser("normalize"); norm.add_argument("source"); norm.add_argument("output"); norm.add_argument("--language", required=True, choices=LANGS); norm.add_argument("--source-alias", required=True); norm.add_argument("--chapter-source-id", required=True)
-    imp=sub.add_parser("import"); imp.add_argument("--pt_BR", required=True); imp.add_argument("--en", required=True); imp.add_argument("--alignment", required=True); imp.add_argument("--ledger", required=True); imp.add_argument("--output", required=True); imp.add_argument("--dry-run", action="store_true")
-    val=sub.add_parser("validate"); val.add_argument("--pt_BR", required=True); val.add_argument("--en", required=True); val.add_argument("--alignment", required=True)
-    rep=sub.add_parser("report"); rep.add_argument("path")
-    a=parser.parse_args()
-    if a.cmd == "normalize": result=normalize_txt(a.source,a.output,a.language,a.source_alias,a.chapter_source_id); print(json.dumps(result, ensure_ascii=False)); return 0
-    if a.cmd == "validate":
-        sources={l:index_blocks(load_blocks(getattr(a,l))) for l in LANGS}; errors,unmapped=validate_alignment(read_json(a.alignment),sources); print(json.dumps({"errors":errors,"unmapped":unmapped},ensure_ascii=False,indent=2)); return int(bool(errors or any(unmapped.values())))
-    if a.cmd == "report": print(Path(a.path).read_text(encoding="utf-8")); return 0
-    report,ok=import_content(a); print(json.dumps(report,ensure_ascii=False,indent=2)); return int(not ok)
+    parser = argparse.ArgumentParser(); commands = parser.add_subparsers(dest="cmd", required=True)
+    normalized = commands.add_parser("normalize"); normalized.add_argument("source"); normalized.add_argument("output"); normalized.add_argument("--language", required=True, choices=LANGS); normalized.add_argument("--source-alias", required=True); normalized.add_argument("--chapter-source-id", required=True)
+    for command in (commands.add_parser("import"), commands.add_parser("validate")):
+        command.add_argument("--pt_BR", required=True); command.add_argument("--en", required=True); command.add_argument("--alignment", required=True)
+    imported = commands.choices["import"]; imported.add_argument("--ledger", required=True); imported.add_argument("--output", required=True); imported.add_argument("--dry-run", action="store_true")
+    displayed = commands.add_parser("report"); displayed.add_argument("path")
+    args = parser.parse_args()
+    if args.cmd == "normalize": print(json.dumps(normalize_txt(args.source, args.output, args.language, args.source_alias, args.chapter_source_id), ensure_ascii=False)); return 0
+    if args.cmd == "validate":
+        sources, source_errors = load_sources(args); errors, unmapped, missing, _, _ = validate_alignment(read_json(args.alignment), sources)
+        result = {"errors": source_errors + errors, "unmapped": unmapped, "missing_translations": missing}; print(json.dumps(result, ensure_ascii=False, indent=2)); return int(bool(result["errors"] or missing or any(unmapped.values())))
+    if args.cmd == "report": print(Path(args.path).read_text(encoding="utf-8")); return 0
+    report, success = import_content(args); print(json.dumps(report, ensure_ascii=False, indent=2)); return int(not success)
+
+
 if __name__ == "__main__": raise SystemExit(main())
