@@ -9,3 +9,4 @@ errors.txt
 *.save
 tests/artifacts/
 .local/
+.local/content_sources/

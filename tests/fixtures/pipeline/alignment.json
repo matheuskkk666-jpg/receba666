@@ -1,0 +1,7 @@
+{"version":1,"units":[
+{"unit_id":"fixture.ch01.u1","chapter_id":"fixture.ch01","pt_BR":["fixture.pt.ch01.b0001"],"en":["fixture.en.ch01.b0001"],"kind":"narration","scene_hint":"fixture_scene_1"},
+{"unit_id":"fixture.ch01.u2","chapter_id":"fixture.ch01","pt_BR":["fixture.pt.ch01.b0002"],"en":["fixture.en.ch01.b0002"],"kind":"dialogue","speaker_hint":"Lia","scene_hint":"fixture_scene_1"},
+{"unit_id":"fixture.ch01.u3","chapter_id":"fixture.ch01","pt_BR":["fixture.pt.ch01.b0003"],"en":["fixture.en.ch01.b0003","fixture.en.ch01.b0004"],"kind":"thought","scene_hint":"fixture_scene_1"},
+{"unit_id":"fixture.ch02.u1","chapter_id":"fixture.ch02","pt_BR":["fixture.pt.ch02.b0001"],"en":["fixture.en.ch02.b0001"],"kind":"narration","scene_hint":"fixture_scene_2"},
+{"unit_id":"fixture.ch02.u2","chapter_id":"fixture.ch02","pt_BR":["fixture.pt.ch02.b0002"],"en":["fixture.en.ch02.b0002"],"kind":"dialogue","scene_hint":"fixture_scene_2"}
+]}
