@@ -53,3 +53,10 @@ O preview de desenvolvimento aceita as variáveis `LN_PREVIEW_SCENE`,
 `LN_PREVIEW_ID`, `LN_PREVIEW_LANGUAGE` (`pt_BR`/`en`) e `LN_PREVIEW_MODE`
 (`static`/`cinematic`). Elas permitem abrir diretamente a cena/posição desejada
 sem criar um fluxo separado de conteúdo.
+
+## Pipeline de conteúdo
+
+O pipeline offline de importação para fontes autorizadas está documentado em
+[`docs/CONTENT_PIPELINE.md`](docs/CONTENT_PIPELINE.md). Fontes locais ficam em
+`.local/content_sources/`, que é ignorada pelo Git; os fixtures versionados são
+apenas texto original de teste.
