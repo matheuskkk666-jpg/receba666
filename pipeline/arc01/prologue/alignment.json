@@ -10,13 +10,13 @@
       "narrative_id": "arc01.prologue.0001",
       "chapter_id": "arc01.prologue",
       "pt_BR": [
-        "v01.prologue.pt.s001",
-        "v01.prologue.pt.s002"
+        "v01.prologue.pt.s001"
       ],
       "en": [
         "v01.prologue.en.s001"
       ],
       "kind": "narration",
+      "scene_hint": "arc01.prologue.runtime_placeholder",
       "status": "source_exact",
       "editorial_status": "reviewed"
     },
@@ -25,12 +25,13 @@
       "narrative_id": "arc01.prologue.0002",
       "chapter_id": "arc01.prologue",
       "pt_BR": [
-        "v01.prologue.pt.s003"
+        "v01.prologue.pt.s002"
       ],
       "en": [
         "v01.prologue.en.s002"
       ],
       "kind": "narration",
+      "scene_hint": "arc01.prologue.runtime_placeholder",
       "status": "source_exact",
       "editorial_status": "reviewed"
     },
@@ -39,12 +40,13 @@
       "narrative_id": "arc01.prologue.0003",
       "chapter_id": "arc01.prologue",
       "pt_BR": [
-        "v01.prologue.pt.s004"
+        "v01.prologue.pt.s003"
       ],
       "en": [
         "v01.prologue.en.s003"
       ],
       "kind": "narration",
+      "scene_hint": "arc01.prologue.runtime_placeholder",
       "status": "source_exact",
       "editorial_status": "reviewed"
     },
@@ -53,12 +55,13 @@
       "narrative_id": "arc01.prologue.0004",
       "chapter_id": "arc01.prologue",
       "pt_BR": [
-        "v01.prologue.pt.s005"
+        "v01.prologue.pt.s004"
       ],
       "en": [
         "v01.prologue.en.s004"
       ],
       "kind": "narration",
+      "scene_hint": "arc01.prologue.runtime_placeholder",
       "status": "source_exact",
       "editorial_status": "reviewed"
     },
@@ -67,12 +70,13 @@
       "narrative_id": "arc01.prologue.0005",
       "chapter_id": "arc01.prologue",
       "pt_BR": [
-        "v01.prologue.pt.s006"
+        "v01.prologue.pt.s005"
       ],
       "en": [
         "v01.prologue.en.s005"
       ],
       "kind": "narration",
+      "scene_hint": "arc01.prologue.runtime_placeholder",
       "status": "source_exact",
       "editorial_status": "reviewed"
     },
@@ -81,13 +85,13 @@
       "narrative_id": "arc01.prologue.0006",
       "chapter_id": "arc01.prologue",
       "pt_BR": [
-        "v01.prologue.pt.s007",
-        "v01.prologue.pt.s008"
+        "v01.prologue.pt.s006"
       ],
       "en": [
         "v01.prologue.en.s006"
       ],
       "kind": "thought",
+      "scene_hint": "arc01.prologue.runtime_placeholder",
       "status": "source_exact",
       "editorial_status": "reviewed"
     }

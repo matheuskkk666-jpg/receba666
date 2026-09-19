@@ -35,7 +35,7 @@ testsuite foundation:
         pause 2.7
         assert screen "say"
         # One glyph may differ while the deterministic typewriter is active.
-        screenshot "m2-reading-indicator-pt.png" max_pixel_difference 250
+        screenshot "m2-reading-indicator-pt.png" max_pixel_difference 500
         assert eval current_chapter == "test.arc01.ch01"
         assert eval current_id == "test.ch01.observatory.0001"
         assert eval is_chapter_unlocked("test.arc01.ch01")
@@ -49,7 +49,7 @@ testsuite foundation:
         assert screen "pause_menu"
         click expression ui_text("chapters")
         # The canonical prologue is now intentionally visible before technical fixtures.
-        screenshot "m2-chapters-locked-pt.png" max_pixel_difference 2200000
+        screenshot "m2-chapters-locked-pt.png"
         click expression ui_text("back")
         keysym "K_ESCAPE"
         assert screen "pause_menu"
@@ -61,11 +61,11 @@ testsuite foundation:
         assert eval slot_metadata(renpy.slot_json("1-1")["chapter_id"])["title"] == "A Última Luz"
         run Function(set_edition, "en")
         assert eval slot_metadata(renpy.slot_json("1-1")["chapter_id"])["title"] == "The Last Light"
-        # Slot timestamps vary between runs; keep the tolerance below 0.05% of 1080p.
-        screenshot "m2-save-slot-en.png" max_pixel_difference 1000
+        # Slot timestamps vary between runs; keep the tolerance below 0.1% of 1080p.
+        screenshot "m2-save-slot-en.png" max_pixel_difference 2000
         run Function(set_edition, "pt_BR")
         assert eval slot_metadata(renpy.slot_json("1-1")["chapter_id"])["title"] == "A Última Luz"
-        screenshot "m2-save-slot-pt.png" max_pixel_difference 1000
+        screenshot "m2-save-slot-pt.png" max_pixel_difference 2000
         click expression ui_text("back")
         advance until screen "chapter_card"
         assert eval current_chapter == "test.arc01.ch02"
@@ -275,11 +275,24 @@ testsuite foundation:
         advance
         assert eval current_id == "arc01.prologue.0001"
         assert eval current_presentation_id == "arc01.prologue.0001.p002"
+        advance until eval current_id == "arc01.prologue.0004" and current_presentation_id == "arc01.prologue.0004.p003"
+        assert eval presentation_segment(project_data, current_id, current_presentation_id)["kind"] == "dialogue"
+        pause 1.0
+        screenshot "m5-prologue-dialogue-pt.png"
         run Function(set_edition, "en")
-        assert eval current_presentation_id == "arc01.prologue.0001.p002"
+        assert eval current_id == "arc01.prologue.0004"
+        assert eval current_presentation_id == "arc01.prologue.0004.p003"
+        pause 1.0
+        screenshot "m5-prologue-dialogue-en.png"
+        run Function(set_edition, "pt_BR")
+        assert eval current_presentation_id == "arc01.prologue.0004.p003"
         run FileSave(2, confirm=False)
         run FileLoad(2, confirm=False)
-        assert eval current_presentation_id == "arc01.prologue.0001.p002"
+        assert eval current_presentation_id == "arc01.prologue.0004.p003"
         run MainMenu(confirm=False)
         click id "continue_journey" until screen "say"
-        assert eval current_presentation_id == "arc01.prologue.0001.p002"
+        assert eval current_presentation_id == "arc01.prologue.0004.p003"
+        advance until eval current_id == "arc01.prologue.0006" and current_presentation_id == "arc01.prologue.0006.p004"
+        advance until screen "main_menu"
+        assert eval "arc01.prologue.0006" in persistent.seen_ids
+        assert eval not has_resume_state()

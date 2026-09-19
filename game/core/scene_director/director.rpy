@@ -26,10 +26,11 @@ init python:
         frame = frames[index]
         store.current_id = frame["id"]
         store.director_state = dict(frame["state"])
-        if presentation_for(project_data, current_id)[0].get("synthetic"):
-            record_position()
-        else:
-            update_resume_position()
+        if store.reading_context == "normal":
+            if presentation_for(project_data, current_id)[0].get("synthetic"):
+                record_position()
+            else:
+                update_resume_position()
         apply_direction(director_state)
 
     def next_narrative_id():

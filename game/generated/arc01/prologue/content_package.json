@@ -33,37 +33,14 @@
         "arc01.prologue.0005",
         "arc01.prologue.0006"
       ],
-      "scene_hints": [],
+      "scene_hints": [
+        "arc01.prologue.runtime_placeholder"
+      ],
       "first_narrative_id": "arc01.prologue.0001",
       "last_narrative_id": "arc01.prologue.0006"
     }
   ],
-  "review_required": [
-    {
-      "unit_id": "arc01.prologue.u001",
-      "reason": "editorial metadata or scene hint pending"
-    },
-    {
-      "unit_id": "arc01.prologue.u002",
-      "reason": "editorial metadata or scene hint pending"
-    },
-    {
-      "unit_id": "arc01.prologue.u003",
-      "reason": "editorial metadata or scene hint pending"
-    },
-    {
-      "unit_id": "arc01.prologue.u004",
-      "reason": "editorial metadata or scene hint pending"
-    },
-    {
-      "unit_id": "arc01.prologue.u005",
-      "reason": "editorial metadata or scene hint pending"
-    },
-    {
-      "unit_id": "arc01.prologue.u006",
-      "reason": "editorial metadata or scene hint pending"
-    }
-  ],
+  "review_required": [],
   "missing_translations": [],
   "conflicts": [],
   "files_to_integrate": [

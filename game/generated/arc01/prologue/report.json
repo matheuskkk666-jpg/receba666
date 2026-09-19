@@ -1,8 +1,8 @@
 {
   "coverage": {
     "pt_BR": {
-      "source_blocks": 8,
-      "mapped_blocks": 8,
+      "source_blocks": 6,
+      "mapped_blocks": 6,
       "unmapped_blocks": 0
     },
     "en": {
@@ -45,31 +45,6 @@
     "en": []
   },
   "missing_translations": [],
-  "review_required": [
-    {
-      "unit_id": "arc01.prologue.u001",
-      "reason": "editorial metadata or scene hint pending"
-    },
-    {
-      "unit_id": "arc01.prologue.u002",
-      "reason": "editorial metadata or scene hint pending"
-    },
-    {
-      "unit_id": "arc01.prologue.u003",
-      "reason": "editorial metadata or scene hint pending"
-    },
-    {
-      "unit_id": "arc01.prologue.u004",
-      "reason": "editorial metadata or scene hint pending"
-    },
-    {
-      "unit_id": "arc01.prologue.u005",
-      "reason": "editorial metadata or scene hint pending"
-    },
-    {
-      "unit_id": "arc01.prologue.u006",
-      "reason": "editorial metadata or scene hint pending"
-    }
-  ],
+  "review_required": [],
   "blockers": []
 }

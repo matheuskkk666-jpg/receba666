@@ -56,6 +56,29 @@ class PresentationTests(unittest.TestCase):
         self.assertNotEqual(pt_text, en_text)
         self.assertEqual(presentation_segment(self.project, narrative_id, segment_id)["ordinal"], 0)
 
+    def test_corrected_cross_language_semantic_checkpoints(self):
+        dialogue_ids = {
+            segment["id"]
+            for narrative_id in self.project["presentation_by_narrative"]
+            for segment in presentation_for(self.project, narrative_id)
+            if segment["kind"] == "dialogue"
+        }
+        self.assertEqual(dialogue_ids, {
+            "arc01.prologue.0004.p003",
+            "arc01.prologue.0004.p005",
+            "arc01.prologue.0006.p001",
+            "arc01.prologue.0006.p003",
+        })
+        self.assertTrue(all(
+            segment["kind"] == "narration"
+            for segment in presentation_for(self.project, "arc01.prologue.0005")
+        ))
+        self.assertTrue(any(
+            segment["kind"] == "thought"
+            for narrative_id in self.project["presentation_by_narrative"]
+            for segment in presentation_for(self.project, narrative_id)
+        ))
+
     def test_old_content_gets_transient_whole_translation_fallback(self):
         narrative_id = "test.ch01.observatory.0001"
         segments = presentation_for(self.project, narrative_id)

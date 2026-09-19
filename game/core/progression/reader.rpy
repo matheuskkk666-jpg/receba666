@@ -42,6 +42,7 @@ init python:
         memory = project_data["memory_by_id"][memory_id]
         store.memory_replay_snapshot = {
             "current_scene": current_scene, "current_id": current_id,
+            "current_presentation_id": current_presentation_id,
             "current_chapter": current_chapter, "frame_index": frame_index,
             "frames": frames, "director_state": dict(director_state),
             "chapter_opening_pending": chapter_opening_pending, "scene_change_pending": scene_change_pending,
@@ -56,6 +57,7 @@ init python:
         if snapshot:
             store.current_scene = snapshot["current_scene"]
             store.current_id = snapshot["current_id"]
+            store.current_presentation_id = snapshot["current_presentation_id"]
             store.current_chapter = snapshot["current_chapter"]
             store.frame_index = snapshot["frame_index"]
             store.frames = snapshot["frames"]
